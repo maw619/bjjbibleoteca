@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BJJ Training Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      border: none;
+    }
+
+    video {
+      border-radius: 12px;
+      width: 100%;
+    }
+
+    .category-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container py-5">
+  <h1 class="text-center mb-4">BJJ Training Library</h1>
+
+  <div class="row">
+    <div class="col-md-6">
+
+{% for category in categories %}
+  <div class="card p-3 mb-4">
+
+    <div class="category-title">{{ category.name }}</div>
+
+    <select class="form-select mt-3" onchange="playVideo(this)">
+      <option disabled selected>Select a section</option>
+
+      {% for section in category.sections.all %}
+      <optgroup label="{{ section.name }}">
+
+        {% for video in section.videos.all %}
+        <option value="{{ video.url }}">
+          {{ video.title }}
+        </option>
+        {% endfor %}
+
+      </optgroup>
+      {% endfor %}
+
+    </select>
+
+    <div class="video-container mt-3" style="display:none;">
+      <video controls></video>
+    </div>
+
+  </div>
+{% endfor %}
+
+    </div>
+  </div>
+</div>
+
+<script>
+function playVideo(select) {
+  const videoUrl = select.value;
+
+  const card = select.closest(".card");
+  const videoContainer = card.querySelector(".video-container");
+  const video = card.querySelector("video");
+
+  video.src = videoUrl;
+  videoContainer.style.display = "block";
+  video.play();
+}
+</script>
+
+</body>
+</html>
