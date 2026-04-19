@@ -211,8 +211,8 @@ button:hover {
         {% for section in category.sections.all %}
         <optgroup label="{{ section.name }}">
           {% for video in section.videos.all %}
-          <option value="{{ video.url }}" data-id="{{ video.id }}">
-            {{ video.title }}
+          <option value="{{ video.url }}" data-id="{{ video.id }}" data-base-title="{{ video.title|escape }}">
+            {% if video.id in noted_video_ids %}📝 {% endif %}{{ video.title }}
           </option>
           {% endfor %}
         </optgroup>
@@ -303,11 +303,13 @@ function saveNote(button) {
 
 function loadNotes(card, videoId) {
   const notesList = card.querySelector(".saved-notes");
+  const select = card.querySelector("select");
 
   fetch(`/get-note/${videoId}/`)
     .then(res => res.json())
     .then(data => {
       const notes = Array.isArray(data.notes) ? data.notes : [];
+      setOptionNoted(select, videoId, notes.length > 0);
 
       if (notes.length === 0) {
         notesList.innerHTML = "";
@@ -321,6 +323,17 @@ function loadNotes(card, videoId) {
         </div>
       `).join("");
     });
+}
+
+function setOptionNoted(select, videoId, hasNotes) {
+  const option = Array.from(select.options).find(
+    opt => opt.getAttribute("data-id") === String(videoId)
+  );
+  if (!option) return;
+
+  const baseTitle = option.dataset.baseTitle || option.textContent.replace(/^📝\s*/, "").trim();
+  option.dataset.baseTitle = baseTitle;
+  option.textContent = hasNotes ? `📝 ${baseTitle}` : baseTitle;
 }
 
 function deleteNoteFromCard(event, noteId, button) {

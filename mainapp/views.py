@@ -98,9 +98,13 @@ def get_note(request, video_id):
 @login_required
 def video_dropdown(request):
     categories = Category.objects.prefetch_related("sections__videos")
+    noted_video_ids = set(
+        Note.objects.filter(user=request.user).values_list("video_id", flat=True)
+    )
  
     return render(request, 'videos.html', {
-        'categories': categories
+        'categories': categories,
+        'noted_video_ids': noted_video_ids,
     })
 
 from django.shortcuts import render, redirect
