@@ -222,8 +222,13 @@ function playVideo(select) {
   fetch(`/get-note/${videoId}/`)
     .then(res => res.json())
     .then(data => {
-      textarea.value = data.content;
-      
+      if (Array.isArray(data.notes) && data.notes.length > 0) {
+        textarea.value = data.notes
+          .map(note => `[${formatTime(note.timestamp || 0)}] ${note.content}`)
+          .join("\n\n");
+      } else {
+        textarea.value = "";
+      }
     });
 }
 

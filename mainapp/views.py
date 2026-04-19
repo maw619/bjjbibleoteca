@@ -72,13 +72,27 @@ def delete_note(request):
 
 @login_required
 def get_note(request, video_id):
-    note = Note.objects.filter(
+    notes = Note.objects.filter(
         user=request.user,
         video_id=video_id
-    ).order_by("-updated_at").first()
+    ).order_by("-updated_at")
+
+    serialized_notes = [
+        {
+            "id": note.id,
+            "content": note.content,
+            "timestamp": note.timestamp or 0,
+        }
+        for note in notes
+    ]
+
+    content = "\n\n".join(
+        [f"[{int(note['timestamp']//60)}:{int(note['timestamp']%60):02d}] {note['content']}" for note in serialized_notes]
+    )
 
     return JsonResponse({
-        "content": note.content if note else ""
+        "content": content,
+        "notes": serialized_notes,
     })
 
 @login_required
