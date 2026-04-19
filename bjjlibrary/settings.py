@@ -33,9 +33,11 @@ SECRET_KEY = 'django-insecure-(-au2@_g#pdzaw&g!gzmekva@yptg!0(0_li7e25(7w-qfbac5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['bjjbiblioteca.com','illegalbjjvideos.com','72.83.183.174', '127.0.0.1']
+ALLOWED_HOSTS = ['https://bjjbiblioteca.com', 'bjjbiblioteca.com','illegalbjjvideos.com','72.83.183.174', '127.0.0.1']
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://bjjbiblioteca.com",
+]
 # Application definition
 
 INSTALLED_APPS = [
