@@ -118,6 +118,31 @@ button:hover {
 .toast.error {
   background: #ef4444;
 }
+.note-container {
+  position: relative;
+  margin-top: 10px;
+}
+
+.note-icon {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  font-size: 16px;
+  color: #60a5fa;
+  pointer-events: none; /* click passes through */
+}
+
+.noteBox {
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  border-radius: 10px;
+  border: none;
+  background: #1e293b;
+  color: white;
+  resize: vertical;
+
+  box-sizing: border-box; /* 🔥 FIX */
+}
 </style>
 </head>
 
@@ -163,7 +188,10 @@ button:hover {
       <video controls playsinline></video>
 
       <!-- NOTES -->
-      <textarea class="noteBox" placeholder="Write notes..."></textarea>
+      <div class="note-container">
+  <span class="note-icon">✍️</span>
+  <textarea class="noteBox" placeholder="Write notes..."></textarea>
+</div>
 
       <button onclick="saveNote(this)">Save Notes</button>
 
