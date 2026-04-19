@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes</title>
+
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Card */
+.card {
+  background: #020617;
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.title {
+  font-weight: bold;
+}
+
+.section {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.note {
+  margin-top: 10px;
+}
+
+.meta {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 10px;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+  position: relative;
+  margin: 5% auto;
+  width: 95%;
+  max-width: 800px;
+}
+
+.modal video {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.modal-title {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.close {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  font-size: 30px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Top nav */
+.topbar {
+  text-align: right;
+  padding: 10px;
+}
+.topbar a {
+  color: #60a5fa;
+  margin-left: 10px;
+  text-decoration: none;
+}
+
+.delete-btn {
+  margin-top: 10px;
+  width: 100%;
+  background: #ef4444;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <a href="{% url 'home' %}">Videos</a>
+  <a href="{% url 'logout' %}">Logout</a>
+</div>
+
+<div class="container">
+  <div class="wrapper">
+
+    <h2 style="text-align:center;">Training Notes</h2>
+
+    {% for note in notes %}
+    <div class="card"
+        data-id="{{ note.id }}"
+        data-url="{{ note.video.url }}"
+        data-timestamp="{{ note.timestamp|default:0 }}"
+        data-title="{{ note.video.title|escapejs }}"
+        onclick="openVideoModal(this)">
+
+      <div class="title">
+        {{ note.video.title }}
+      </div>
+    <br>
+      <div class="section">
+       section: {{ note.video.section.name }}
+      </div>
+
+      <div class="note">
+        message: {{ note.content }}
+      </div>
+
+      <div class="meta">
+        <h3>posted by: {{ note.user.username }} • 
+        {{ note.updated_at|timesince }} ago</h4>
+      </div>
+        {% if note.user == user %}
+        <button class="delete-btn" onclick="deleteNote(event, this)">
+            Delete
+        </button>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p style="text-align:center; color:#94a3b8;">No notes yet.</p>
+    {% endfor %}
+
+  </div>
+</div>
+
+<!-- 🎬 MODAL -->
+<div id="videoModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+
+    <div class="modal-title" id="modalTitle"></div>
+
+    <video id="modalVideo" controls></video>
+  </div>
+</div>
+
+<script>
+function openVideoModal(card) {
+  const url = card.dataset.url;
+  const timestamp = parseFloat(card.dataset.timestamp) || 0;
+  const title = card.dataset.title;
+
+  const modal = document.getElementById("videoModal");
+  const video = document.getElementById("modalVideo");
+  const modalTitle = document.getElementById("modalTitle");
+
+  modalTitle.innerText = title;
+  video.src = url;
+
+  modal.style.display = "block";
+
+  video.onloadedmetadata = () => {
+    video.currentTime = timestamp;
+    video.play();
+  };
+}
+
+function closeModal() {
+  const modal = document.getElementById("videoModal");
+  const video = document.getElementById("modalVideo");
+
+  modal.style.display = "none";
+  video.pause();
+  video.src = "";
+}
+
+// Close when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById("videoModal");
+  if (event.target === modal) {
+    closeModal();
+  }
+}
+
+
+function deleteNote(event, button) {
+  event.stopPropagation();
+
+  const card = button.closest(".card");
+  const noteId = card.dataset.id;
+
+  console.log("Deleting note ID:", noteId); // 🔥 DEBUG
+
+  if (!noteId) {
+    alert("No note ID found");
+    return;
+  }
+
+  if (!confirm("Delete this note?")) return;
+
+  fetch("/delete-note/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify({
+      note_id: noteId
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Response:", data); // 🔥 DEBUG
+
+    if (data.status === "deleted") {
+      card.remove();
+      showToast("Note deleted");
+    } else {
+      showToast("Delete failed", true);
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    showToast("Error deleting note", true);
+  });
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+      }
+    }
+  }
+  return cookieValue;
+}
+
+showToast("Note deleted");
+</script>
+
+</body>
+</html>

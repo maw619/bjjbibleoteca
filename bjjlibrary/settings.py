@@ -14,6 +14,12 @@ from pathlib import Path
 import os 
 
 
+# 1. Set the timezone to America/New_York (covers Eastern Time)
+TIME_ZONE = 'America/New_York'
+
+# 2. Ensure TZ support is active so Django handles DST automatically
+USE_TZ = True
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
