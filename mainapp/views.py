@@ -36,16 +36,14 @@ def save_note(request):
         except Video.DoesNotExist:
             return JsonResponse({"error": "Video not found"}, status=404)
 
-        note, created = Note.objects.update_or_create(
+        note = Note.objects.create(
             user=request.user,
             video=video,
-            defaults={
-                "content": content,
-                "timestamp": float(timestamp)
-            }
+            content=content,
+            timestamp=float(timestamp)
         )
 
-        return JsonResponse({"status": "success"})
+        return JsonResponse({"status": "success", "note_id": note.id})
     
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
@@ -77,7 +75,7 @@ def get_note(request, video_id):
     note = Note.objects.filter(
         user=request.user,
         video_id=video_id
-    ).first()
+    ).order_by("-updated_at").first()
 
     return JsonResponse({
         "content": note.content if note else ""
