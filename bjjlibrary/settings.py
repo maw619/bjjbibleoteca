@@ -35,8 +35,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['https://bjjbiblioteca.com', 'bjjbiblioteca.com','illegalbjjvideos.com','72.83.183.174', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://bjjbiblioteca.com",
+CSRF_TRUSTED_ORIGINS = [ 
     "https://illegalbjjvideos.com",
 ]
 # Application definition
