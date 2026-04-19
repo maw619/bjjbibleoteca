@@ -72,7 +72,15 @@ video {
 </head>
 
 <body>
-
+<div style="text-align:right; padding:10px;">
+  {% if user.is_authenticated %}
+    Welcome, {{ user.username }} |
+    <a href="{% url 'logout' %}">Logout</a>
+  {% else %}
+    <a href="{% url 'login' %}">Login</a> |
+    <a href="{% url 'register' %}">Register</a>
+  {% endif %}
+</div>
 <div class="container d-flex justify-content-center">
   <div class="w-100" style="max-width: 600px;">
 
