@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['https://bjjbiblioteca.com', 'bjjbiblioteca.com','illegalbjjvid
 
 CSRF_TRUSTED_ORIGINS = [
     "https://bjjbiblioteca.com",
+    "https://illegalbjjvideos.com",
 ]
 # Application definition
 
