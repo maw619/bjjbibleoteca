@@ -72,6 +72,41 @@ video {
   resize: vertical;
 }
 
+.saved-notes {
+  margin-top: 10px;
+}
+
+.saved-note-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #0f172a;
+}
+
+.saved-note-text {
+  font-size: 13px;
+  color: #cbd5e1;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.delete-note-btn {
+  width: auto;
+  margin-top: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #ef4444;
+  font-size: 12px;
+}
+
+.delete-note-btn:hover {
+  background: #dc2626;
+}
+
 /* Button */
 button {
   width: 100%;
@@ -192,6 +227,7 @@ button:hover {
   <span class="note-icon">✍️</span>
   <textarea class="noteBox" placeholder="Write notes..."></textarea>
 </div>
+      <div class="saved-notes"></div>
 
       <button onclick="saveNote(this)">Save Notes</button>
 
@@ -210,7 +246,6 @@ function playVideo(select) {
 
   const card = select.closest(".card");
   const video = card.querySelector("video");
-  const textarea = card.querySelector(".noteBox");
 
   video.src = videoUrl;
   video.play();
@@ -218,18 +253,7 @@ function playVideo(select) {
   // store video ID
   card.dataset.videoId = videoId;
 
-  // 🔥 LOAD SAVED NOTE
-  fetch(`/get-note/${videoId}/`)
-    .then(res => res.json())
-    .then(data => {
-      if (Array.isArray(data.notes) && data.notes.length > 0) {
-        textarea.value = data.notes
-          .map(note => `[${formatTime(note.timestamp || 0)}] ${note.content}`)
-          .join("\n\n");
-      } else {
-        textarea.value = "";
-      }
-    });
+  loadNotes(card, videoId);
 }
 
 function saveNote(button) {
@@ -266,11 +290,79 @@ function saveNote(button) {
     const formattedTime = formatTime(timestamp);
 
     showToast(`Saved at ${formattedTime} — ${videoTitle}`);
+    textarea.value = "";
+    loadNotes(card, videoId);
   })
   .catch(() => {
     showToast("Error saving note", true);
   });
   navigator.vibrate(50);
+}
+
+function loadNotes(card, videoId) {
+  const textarea = card.querySelector(".noteBox");
+  const notesList = card.querySelector(".saved-notes");
+
+  fetch(`/get-note/${videoId}/`)
+    .then(res => res.json())
+    .then(data => {
+      const notes = Array.isArray(data.notes) ? data.notes : [];
+
+      if (notes.length === 0) {
+        notesList.innerHTML = "";
+        textarea.value = "";
+        return;
+      }
+
+      textarea.value = notes
+        .map(note => `[${formatTime(note.timestamp || 0)}] ${note.content}`)
+        .join("\n\n");
+
+      notesList.innerHTML = notes.map(note => `
+        <div class="saved-note-item">
+          <div class="saved-note-text">[${formatTime(note.timestamp || 0)}] ${escapeHtml(note.content)}</div>
+          <button class="delete-note-btn" onclick="deleteNoteFromCard(event, ${note.id}, this)">Delete</button>
+        </div>
+      `).join("");
+    });
+}
+
+function deleteNoteFromCard(event, noteId, button) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!confirm("Delete this note?")) return;
+
+  fetch("/delete-note/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify({
+      note_id: noteId
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "deleted") {
+      const card = button.closest(".card");
+      const videoId = card.dataset.videoId;
+      if (videoId) loadNotes(card, videoId);
+      showToast("Note deleted");
+    } else {
+      showToast("Delete failed", true);
+    }
+  })
+  .catch(() => {
+    showToast("Error deleting note", true);
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.innerText = text;
+  return div.innerHTML;
 }
 // CSRF helper
 function getCookie(name) {
