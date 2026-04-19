@@ -259,10 +259,12 @@ function playVideo(select) {
 function saveNote(button) {
   const card = button.closest(".card");
   const video = card.querySelector("video");
+  const select = card.querySelector("select");
+  const selected = select.options[select.selectedIndex];
 
   const textarea = card.querySelector(".noteBox");
   const content = textarea.value;
-  const videoId = card.dataset.videoId;
+  const videoId = selected?.getAttribute("data-id");
 
   if (!videoId) {
     showToast("Please select a video first", true);
@@ -300,7 +302,6 @@ function saveNote(button) {
 }
 
 function loadNotes(card, videoId) {
-  const textarea = card.querySelector(".noteBox");
   const notesList = card.querySelector(".saved-notes");
 
   fetch(`/get-note/${videoId}/`)
@@ -310,13 +311,8 @@ function loadNotes(card, videoId) {
 
       if (notes.length === 0) {
         notesList.innerHTML = "";
-        textarea.value = "";
         return;
       }
-
-      textarea.value = notes
-        .map(note => `[${formatTime(note.timestamp || 0)}] ${note.content}`)
-        .join("\n\n");
 
       notesList.innerHTML = notes.map(note => `
         <div class="saved-note-item">
