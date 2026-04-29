@@ -121,6 +121,48 @@ body {
 .delete-btn:hover {
   background: #dc2626;
 }
+
+.comments {
+  margin-top: 12px;
+  border-top: 1px solid #1e293b;
+  padding-top: 10px;
+}
+
+.comment-item {
+  background: #0f172a;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.comment-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.comment-form {
+  display: flex;
+  gap: 8px;
+}
+
+.comment-input {
+  flex: 1;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #020617;
+  color: white;
+  padding: 8px;
+}
+
+.comment-btn {
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+}
 </style>
 </head>
 
@@ -165,6 +207,24 @@ body {
             Delete
         </button>
         {% endif %}
+
+      <div class="comments" onclick="event.stopPropagation()">
+        <div class="comment-list" id="comments-{{ note.id }}">
+          {% for comment in note.comments.all %}
+            <div class="comment-item">
+              <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
+              <div>{{ comment.content }}</div>
+            </div>
+          {% empty %}
+            <div class="comment-meta" id="comments-empty-{{ note.id }}">No comments yet.</div>
+          {% endfor %}
+        </div>
+
+        <form class="comment-form" onsubmit="addComment(event, {{ note.id }})">
+          <input class="comment-input" id="comment-input-{{ note.id }}" type="text" placeholder="Add a comment" required>
+          <button class="comment-btn" type="submit">Post</button>
+        </form>
+      </div>
     </div>
     {% empty %}
     <p style="text-align:center; color:#94a3b8;">No notes yet.</p>
@@ -203,6 +263,42 @@ function openVideoModal(card) {
     video.currentTime = timestamp;
     video.play();
   };
+}
+
+function addComment(event, noteId) {
+  event.preventDefault();
+
+  const input = document.getElementById(`comment-input-${noteId}`);
+  const list = document.getElementById(`comments-${noteId}`);
+  const empty = document.getElementById(`comments-empty-${noteId}`);
+  const content = input.value.trim();
+
+  if (!content) return;
+
+  fetch('/add-note-comment/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ note_id: noteId, content })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status !== 'success') {
+      showToast('Comment failed', true);
+      return;
+    }
+
+    if (empty) empty.remove();
+
+    const item = document.createElement('div');
+    item.className = 'comment-item';
+    item.innerHTML = `<div class="comment-meta">${data.comment.username} • just now</div><div>${data.comment.content}</div>`;
+    list.appendChild(item);
+    input.value = '';
+  })
+  .catch(() => showToast('Comment failed', true));
 }
 
 function closeModal() {
