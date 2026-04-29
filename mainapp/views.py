@@ -1,12 +1,10 @@
-from django.shortcuts import render
-from .models import Category
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
-from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from .models import Note, Video
+from .models import Category, Note, Video, NoteComment
 import json
-from django.utils import timezone  # <--- Import at the top
+from django.utils import timezone
 
 
 @login_required
@@ -15,11 +13,48 @@ def notes_list(request):
         "user",
         "video",
         "video__section"
+    ).prefetch_related(
+        "comments__user"
     ).order_by("-updated_at")
 
     return render(request, "notes.html", {
         "notes": notes
     })
+
+
+@require_POST
+@login_required
+def add_note_comment(request):
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        note_id = data.get("note_id")
+        content = (data.get("content") or "").strip()
+
+        if not note_id or not content:
+            return JsonResponse({"error": "Missing note or comment content"}, status=400)
+
+        note = Note.objects.get(id=note_id)
+        comment = NoteComment.objects.create(
+            note=note,
+            user=request.user,
+            content=content,
+        )
+
+        return JsonResponse({
+            "status": "success",
+            "comment": {
+                "id": comment.id,
+                "username": comment.user.username,
+                "content": comment.content,
+                "created_at": timezone.localtime(comment.created_at).strftime("%Y-%m-%d %H:%M"),
+            },
+        })
+
+    except Note.DoesNotExist:
+        return JsonResponse({"error": "Note not found"}, status=404)
+    except Exception as e:
+        print("ERROR:", e)
+        return JsonResponse({"error": "Server error"}, status=500)
 
 @login_required
 def save_note(request):
@@ -45,10 +80,6 @@ def save_note(request):
 
         return JsonResponse({"status": "success", "note_id": note.id})
     
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
-from .models import Note
-
 @require_POST
 @login_required
 def delete_note(request):
@@ -107,7 +138,6 @@ def video_dropdown(request):
         'noted_video_ids': noted_video_ids,
     })
 
-from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm
