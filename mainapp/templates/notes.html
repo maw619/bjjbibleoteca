@@ -135,10 +135,27 @@ body {
   margin-bottom: 8px;
 }
 
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
 .comment-meta {
   font-size: 11px;
   color: #94a3b8;
   margin-bottom: 4px;
+}
+
+.comment-delete-btn {
+  border: none;
+  border-radius: 6px;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  cursor: pointer;
 }
 
 .comment-form {
@@ -211,8 +228,13 @@ body {
       <div class="comments" onclick="event.stopPropagation()">
         <div class="comment-list" id="comments-{{ note.id }}">
           {% for comment in note.comments.all %}
-            <div class="comment-item">
-              <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
+            <div class="comment-item" id="comment-{{ comment.id }}">
+              <div class="comment-header">
+                <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
+                {% if comment.user == user %}
+                  <button class="comment-delete-btn" onclick="deleteComment(event, {{ comment.id }})">Delete</button>
+                {% endif %}
+              </div>
               <div>{{ comment.content }}</div>
             </div>
           {% empty %}
@@ -294,11 +316,37 @@ function addComment(event, noteId) {
 
     const item = document.createElement('div');
     item.className = 'comment-item';
-    item.innerHTML = `<div class="comment-meta">${data.comment.username} • just now</div><div>${data.comment.content}</div>`;
+    item.id = `comment-${data.comment.id}`;
+    item.innerHTML = `<div class="comment-header"><div class="comment-meta">${data.comment.username} • just now</div><button class="comment-delete-btn" onclick="deleteComment(event, ${data.comment.id})">Delete</button></div><div>${data.comment.content}</div>`;
     list.appendChild(item);
     input.value = '';
   })
   .catch(() => showToast('Comment failed', true));
+}
+
+function deleteComment(event, commentId) {
+  event.stopPropagation();
+
+  fetch('/delete-note-comment/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ comment_id: commentId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status !== 'deleted') {
+      showToast('Delete failed', true);
+      return;
+    }
+
+    const commentEl = document.getElementById(`comment-${commentId}`);
+    if (commentEl) commentEl.remove();
+    showToast('Comment deleted');
+  })
+  .catch(() => showToast('Delete failed', true));
 }
 
 function closeModal() {

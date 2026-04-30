@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from .models import Category, Note, Video, NoteComment
 import json
 from django.utils import timezone
+from django.db import connection
+from django.db.utils import OperationalError, ProgrammingError
 
 
 @login_required
@@ -13,9 +15,13 @@ def notes_list(request):
         "user",
         "video",
         "video__section"
-    ).prefetch_related(
-        "comments__user"
-    ).order_by("-updated_at")
+    )
+
+    table_names = connection.introspection.table_names()
+    if "mainapp_notecomment" in table_names:
+        notes = notes.prefetch_related("comments__user")
+
+    notes = notes.order_by("-updated_at")
 
     return render(request, "notes.html", {
         "notes": notes
@@ -52,6 +58,29 @@ def add_note_comment(request):
 
     except Note.DoesNotExist:
         return JsonResponse({"error": "Note not found"}, status=404)
+    except (OperationalError, ProgrammingError):
+        return JsonResponse({"error": "Comments table is missing. Run migrations first."}, status=503)
+    except Exception as e:
+        print("ERROR:", e)
+        return JsonResponse({"error": "Server error"}, status=500)
+
+
+@require_POST
+@login_required
+def delete_note_comment(request):
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        comment_id = data.get("comment_id")
+
+        if not comment_id:
+            return JsonResponse({"error": "Missing comment id"}, status=400)
+
+        comment = NoteComment.objects.get(id=comment_id, user=request.user)
+        comment.delete()
+
+        return JsonResponse({"status": "deleted"})
+    except NoteComment.DoesNotExist:
+        return JsonResponse({"error": "Not allowed"}, status=403)
     except Exception as e:
         print("ERROR:", e)
         return JsonResponse({"error": "Server error"}, status=500)
