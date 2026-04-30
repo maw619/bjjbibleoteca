@@ -64,6 +64,27 @@ def add_note_comment(request):
         print("ERROR:", e)
         return JsonResponse({"error": "Server error"}, status=500)
 
+
+@require_POST
+@login_required
+def delete_note_comment(request):
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        comment_id = data.get("comment_id")
+
+        if not comment_id:
+            return JsonResponse({"error": "Missing comment id"}, status=400)
+
+        comment = NoteComment.objects.get(id=comment_id, user=request.user)
+        comment.delete()
+
+        return JsonResponse({"status": "deleted"})
+    except NoteComment.DoesNotExist:
+        return JsonResponse({"error": "Not allowed"}, status=403)
+    except Exception as e:
+        print("ERROR:", e)
+        return JsonResponse({"error": "Server error"}, status=500)
+
 @login_required
 def save_note(request):
     if request.method == "POST":
