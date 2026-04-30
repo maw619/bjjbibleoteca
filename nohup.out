@@ -14872,3 +14872,760 @@ django.db.utils.OperationalError: no such table: mainapp_notecomment
 [29/Apr/2026 21:27:45] "GET /notes/ HTTP/1.0" 500 203100
 Not Found: /wp-admin/install.php
 [29/Apr/2026 21:30:28] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Internal Server Error: /notes/
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: mainapp_notecomment
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/mainapp/views.py", line 20, in notes_list
+    return render(request, "notes.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/defaulttags.py", line 202, in render
+    len_values = len(values)
+                 ^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 372, in __len__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2002, in _fetch_all
+    self._prefetch_related_objects()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 1369, in _prefetch_related_objects
+    prefetch_related_objects(self._result_cache, *self._prefetch_related_lookups)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2451, in prefetch_related_objects
+    obj_list, additional_lookups = prefetch_one_level(
+                                   ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2607, in prefetch_one_level
+    ) = prefetcher.get_prefetch_querysets(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/fields/related_descriptors.py", line 777, in get_prefetch_querysets
+    for rel_obj in queryset:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 390, in __iter__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2000, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 95, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/sql/compiler.py", line 1624, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: mainapp_notecomment
+[29/Apr/2026 21:33:38] "GET /notes/ HTTP/1.0" 500 203237
+Internal Server Error: /notes/
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: mainapp_notecomment
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/mainapp/views.py", line 20, in notes_list
+    return render(request, "notes.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/defaulttags.py", line 202, in render
+    len_values = len(values)
+                 ^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 372, in __len__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2002, in _fetch_all
+    self._prefetch_related_objects()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 1369, in _prefetch_related_objects
+    prefetch_related_objects(self._result_cache, *self._prefetch_related_lookups)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2451, in prefetch_related_objects
+    obj_list, additional_lookups = prefetch_one_level(
+                                   ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2607, in prefetch_one_level
+    ) = prefetcher.get_prefetch_querysets(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/fields/related_descriptors.py", line 777, in get_prefetch_querysets
+    for rel_obj in queryset:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 390, in __iter__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2000, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 95, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/sql/compiler.py", line 1624, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: mainapp_notecomment
+[29/Apr/2026 21:33:39] "GET /notes/ HTTP/1.0" 500 203237
+Internal Server Error: /notes/
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: mainapp_notecomment
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/mainapp/views.py", line 20, in notes_list
+    return render(request, "notes.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/defaulttags.py", line 202, in render
+    len_values = len(values)
+                 ^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 372, in __len__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2002, in _fetch_all
+    self._prefetch_related_objects()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 1369, in _prefetch_related_objects
+    prefetch_related_objects(self._result_cache, *self._prefetch_related_lookups)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2451, in prefetch_related_objects
+    obj_list, additional_lookups = prefetch_one_level(
+                                   ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2607, in prefetch_one_level
+    ) = prefetcher.get_prefetch_querysets(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/fields/related_descriptors.py", line 777, in get_prefetch_querysets
+    for rel_obj in queryset:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 390, in __iter__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2000, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 95, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/sql/compiler.py", line 1624, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: mainapp_notecomment
+[29/Apr/2026 21:34:01] "GET /notes/ HTTP/1.0" 500 203237
+[29/Apr/2026 21:34:54] "GET / HTTP/1.0" 200 325078
+Internal Server Error: /notes/
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: mainapp_notecomment
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/mainapp/views.py", line 20, in notes_list
+    return render(request, "notes.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/defaulttags.py", line 202, in render
+    len_values = len(values)
+                 ^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 372, in __len__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2002, in _fetch_all
+    self._prefetch_related_objects()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 1369, in _prefetch_related_objects
+    prefetch_related_objects(self._result_cache, *self._prefetch_related_lookups)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2451, in prefetch_related_objects
+    obj_list, additional_lookups = prefetch_one_level(
+                                   ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2607, in prefetch_one_level
+    ) = prefetcher.get_prefetch_querysets(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/fields/related_descriptors.py", line 777, in get_prefetch_querysets
+    for rel_obj in queryset:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 390, in __iter__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2000, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 95, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/sql/compiler.py", line 1624, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: mainapp_notecomment
+[29/Apr/2026 21:34:55] "GET /notes/ HTTP/1.0" 500 203098
+Internal Server Error: /notes/
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: mainapp_notecomment
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/mainapp/views.py", line 20, in notes_list
+    return render(request, "notes.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/template/defaulttags.py", line 202, in render
+    len_values = len(values)
+                 ^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 372, in __len__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2002, in _fetch_all
+    self._prefetch_related_objects()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 1369, in _prefetch_related_objects
+    prefetch_related_objects(self._result_cache, *self._prefetch_related_lookups)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2451, in prefetch_related_objects
+    obj_list, additional_lookups = prefetch_one_level(
+                                   ^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2607, in prefetch_one_level
+    ) = prefetcher.get_prefetch_querysets(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/fields/related_descriptors.py", line 777, in get_prefetch_querysets
+    for rel_obj in queryset:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 390, in __iter__
+    self._fetch_all()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 2000, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/query.py", line 95, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/models/sql/compiler.py", line 1624, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 359, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: mainapp_notecomment
+[29/Apr/2026 21:34:56] "GET /notes/ HTTP/1.0" 500 203235
+[29/Apr/2026 21:39:01] "GET /notes/ HTTP/1.0" 200 8561
+Not Found: /robots.txt
+[29/Apr/2026 22:15:09] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /wp-admin/install.php
+[29/Apr/2026 22:32:54] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+[29/Apr/2026 22:35:30] "GET / HTTP/1.0" 302 0
+[29/Apr/2026 22:35:31] "GET /login/?next=/ HTTP/1.0" 200 1963
+[29/Apr/2026 22:35:31] "GET /register/ HTTP/1.0" 200 2419
+[29/Apr/2026 22:50:31] code 400, message Bad request version ('\xc0\\x14\xc0')
+[29/Apr/2026 22:50:31] You're accessing the development server over HTTPS, but it only supports HTTP.
+[29/Apr/2026 22:50:31] code 400, message Bad request syntax ('MGLNDD_18.222.19.88_8001')
+[29/Apr/2026 22:50:31] "MGLNDD_18.222.19.88_8001" 400 -
+Not Found: /robots.txt
+[29/Apr/2026 23:18:23] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /wp-admin/install.php
+[29/Apr/2026 23:31:16] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+[30/Apr/2026 00:03:05] "GET / HTTP/1.0" 200 325078
+[30/Apr/2026 00:03:05] "GET /static/favicon.ico HTTP/1.0" 304 0
+[30/Apr/2026 00:03:14] "GET /get-note/2/ HTTP/1.0" 200 28
+[30/Apr/2026 00:03:21] "POST /save-note/ HTTP/1.0" 200 36
+[30/Apr/2026 00:03:21] "GET /get-note/2/ HTTP/1.0" 200 91
+[30/Apr/2026 00:03:24] "GET /notes/ HTTP/1.0" 200 9826
+[30/Apr/2026 00:03:33] "POST /add-note-comment/ HTTP/1.0" 200 125
+[30/Apr/2026 00:03:39] "GET / HTTP/1.0" 200 325083
+[30/Apr/2026 00:03:42] "GET /get-note/2/ HTTP/1.0" 200 91
+[30/Apr/2026 00:04:05] "POST /delete-note/ HTTP/1.0" 200 21
+[30/Apr/2026 00:04:05] "GET /get-note/2/ HTTP/1.0" 200 28
+[30/Apr/2026 00:04:11] "GET /notes/ HTTP/1.0" 200 8561
+[30/Apr/2026 00:04:20] "POST /add-note-comment/ HTTP/1.0" 200 115
+[30/Apr/2026 00:10:01] "GET / HTTP/1.0" 200 325078
+[30/Apr/2026 00:10:10] "GET /get-note/1/ HTTP/1.0" 200 28
+[30/Apr/2026 00:10:14] "GET /get-note/2/ HTTP/1.0" 200 28
+[30/Apr/2026 00:10:14] "GET /get-note/3/ HTTP/1.0" 200 28
+[30/Apr/2026 00:10:19] "GET /notes/ HTTP/1.0" 200 8634
+[30/Apr/2026 00:10:40] "GET / HTTP/1.0" 200 325078
+[30/Apr/2026 00:10:44] "GET /admin HTTP/1.0" 301 0
+[30/Apr/2026 00:10:44] "GET /admin/ HTTP/1.0" 200 8865
+[30/Apr/2026 00:10:44] "GET /static/admin/css/responsive.css HTTP/1.0" 304 0
+[30/Apr/2026 00:10:44] "GET /static/admin/css/dashboard.css HTTP/1.0" 304 0
+[30/Apr/2026 00:10:44] "GET /static/admin/js/theme.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:44] "GET /static/admin/css/nav_sidebar.css HTTP/1.0" 304 0
+[30/Apr/2026 00:10:44] "GET /static/admin/css/dark_mode.css HTTP/1.0" 200 3538
+[30/Apr/2026 00:10:44] "GET /static/admin/css/base.css HTTP/1.0" 304 0
+[30/Apr/2026 00:10:44] "GET /static/admin/js/nav_sidebar.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:44] "GET /static/admin/img/icon-addlink.svg HTTP/1.0" 200 593
+[30/Apr/2026 00:10:44] "GET /static/admin/img/icon-changelink.svg HTTP/1.0" 200 978
+[30/Apr/2026 00:10:47] "GET /admin/mainapp/note/ HTTP/1.0" 200 32249
+[30/Apr/2026 00:10:47] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:10:47] "GET /static/admin/css/changelists.css HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/js/prepopulate.js HTTP/1.0" 200 1531
+[30/Apr/2026 00:10:47] "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/js/actions.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/js/urlify.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/js/core.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/img/search.svg HTTP/1.0" 200 607
+[30/Apr/2026 00:10:47] "GET /static/admin/js/jquery.init.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/js/filters.js HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/img/tooltag-add.svg HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/img/icon-viewlink.svg HTTP/1.0" 304 0
+[30/Apr/2026 00:10:47] "GET /static/admin/img/sorting-icons.svg HTTP/1.0" 304 0
+[30/Apr/2026 00:10:50] "GET /admin/mainapp/note/12/change/ HTTP/1.0" 200 60849
+[30/Apr/2026 00:10:51] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:10:51] "GET /static/admin/css/forms.css HTTP/1.0" 200 8831
+[30/Apr/2026 00:10:51] "GET /static/admin/js/prepopulate_init.js HTTP/1.0" 200 586
+[30/Apr/2026 00:10:51] "GET /static/admin/css/widgets.css HTTP/1.0" 200 11811
+[30/Apr/2026 00:10:51] "GET /static/admin/js/change_form.js HTTP/1.0" 200 606
+[30/Apr/2026 00:10:54] "GET /admin/mainapp/note/ HTTP/1.0" 200 32249
+[30/Apr/2026 00:10:57] "GET /admin/mainapp/note/ HTTP/1.0" 200 32249
+[30/Apr/2026 00:10:58] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:10:59] "GET /admin/mainapp/section/ HTTP/1.0" 200 52714
+[30/Apr/2026 00:10:59] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:11:02] "GET /admin/mainapp/video/ HTTP/1.0" 200 67744
+[30/Apr/2026 00:11:02] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:11:04] "GET /admin/mainapp/note/ HTTP/1.0" 200 32249
+[30/Apr/2026 00:11:04] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:11:10] "GET /admin/mainapp/note/12/change/ HTTP/1.0" 200 60849
+[30/Apr/2026 00:11:10] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:11:15] "GET /admin/mainapp/note/ HTTP/1.0" 200 32249
+[30/Apr/2026 00:21:10] "GET /admin/mainapp/note/12/change/ HTTP/1.0" 200 60849
+[30/Apr/2026 00:21:10] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:21:12] "GET /admin/mainapp/note/12/delete/ HTTP/1.0" 200 9545
+[30/Apr/2026 00:21:12] "GET /static/admin/js/cancel.js HTTP/1.0" 200 884
+[30/Apr/2026 00:21:14] "POST /admin/mainapp/note/12/delete/ HTTP/1.0" 302 0
+[30/Apr/2026 00:21:14] "GET /admin/mainapp/note/ HTTP/1.0" 200 31948
+[30/Apr/2026 00:21:14] "GET /admin/jsi18n/ HTTP/1.0" 200 3342
+[30/Apr/2026 00:21:14] "GET /static/admin/img/icon-yes-dark.svg HTTP/1.0" 200 558
+[30/Apr/2026 00:21:23] "GET / HTTP/1.0" 200 325078
+[30/Apr/2026 00:21:29] "GET /notes/ HTTP/1.0" 200 7326
+[30/Apr/2026 00:26:40] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 00:26:40] "GET /login/?next=/ HTTP/1.0" 200 1963
+Not Found: /gp/cart/view.html
+[30/Apr/2026 00:27:16] "GET /gp/cart/view.html HTTP/1.0" 404 4580
+Not Found: /gp/cart/view.html
+[30/Apr/2026 00:27:16] "GET /gp/cart/view.html HTTP/1.0" 404 4580
+Not Found: /wp-admin/install.php
+[30/Apr/2026 00:35:18] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 01:11:30] "GET /robots.txt HTTP/1.0" 404 4559
+[30/Apr/2026 01:12:13] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 01:12:15] "GET /login/?next=/ HTTP/1.0" 200 1963
+Not Found: /wp-admin/install.php
+[30/Apr/2026 01:35:14] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 02:14:53] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /wp-admin/install.php
+[30/Apr/2026 02:39:15] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+[30/Apr/2026 03:13:43] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 03:13:44] "GET /login/?next=/ HTTP/1.0" 200 1963
+[30/Apr/2026 03:21:50] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 03:21:50] "GET /login/?next=/ HTTP/1.0" 200 1963
+Not Found: /robots.txt
+[30/Apr/2026 03:34:06] "GET /robots.txt HTTP/1.0" 404 4559
+Invalid HTTP_HOST header: '18.222.19.88:8001'. You may need to add '18.222.19.88' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/utils/deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/http/request.py", line 206, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '18.222.19.88:8001'. You may need to add '18.222.19.88' to ALLOWED_HOSTS.
+[30/Apr/2026 03:38:10] "GET / HTTP/1.1" 400 64489
+Invalid HTTP_HOST header: '18.222.19.88:8001'. You may need to add '18.222.19.88' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/utils/deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/http/request.py", line 206, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '18.222.19.88:8001'. You may need to add '18.222.19.88' to ALLOWED_HOSTS.
+[30/Apr/2026 03:40:18] "GET / HTTP/1.1" 400 64489
+[30/Apr/2026 03:41:32] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x00{\\x01\\x00\\x00w\\x03\\x03O}\\x11\\x87\\x12\\x16\\x1b\\x01\xb3\\x8aqw\xeb\xa6\\x9d\xe7\\\\\\x88n\xbd^)w$*J\xf1\xab\\x954L\\x8a\\x00\\x00\\x1a\xc0/\xc0+\xc0\\x11\xc0\\x07\xc0\\x13\xc0')
+[30/Apr/2026 03:41:32] You're accessing the development server over HTTPS, but it only supports HTTP.
+Not Found: /wp-admin/install.php
+[30/Apr/2026 03:44:03] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+[30/Apr/2026 04:17:17] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 04:17:17] "GET /login/?next=/ HTTP/1.0" 200 1963
+Not Found: /robots.txt
+[30/Apr/2026 04:44:06] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /wp-admin/install.php
+[30/Apr/2026 04:47:55] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+[30/Apr/2026 05:53:10] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 05:53:15] "GET /login/?next=/ HTTP/1.0" 200 1963
+Not Found: /wp-admin/install.php
+[30/Apr/2026 05:58:09] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 06:07:18] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /xmlrpc.php
+[30/Apr/2026 06:52:59] "POST /xmlrpc.php HTTP/1.0" 404 4560
+Not Found: /wp-admin/install.php
+[30/Apr/2026 07:00:42] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 07:10:48] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /wp-admin/install.php
+[30/Apr/2026 07:53:38] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 08:21:17] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /wp-admin/install.php
+[30/Apr/2026 08:59:29] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+[30/Apr/2026 09:56:50] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 09:56:51] "GET /login/?next=/ HTTP/1.0" 200 1963
+Not Found: /wp-admin/install.php
+[30/Apr/2026 10:00:36] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 10:08:12] "GET /robots.txt HTTP/1.0" 404 4559
+[30/Apr/2026 10:08:47] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 10:08:47] "GET / HTTP/1.0" 302 0
+Not Found: /wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:47] "GET /wp-includes/wlwmanifest.xml HTTP/1.0" 404 4610
+Not Found: /xmlrpc.php
+[30/Apr/2026 10:08:47] "GET /xmlrpc.php?rsd HTTP/1.0" 404 4563
+[30/Apr/2026 10:08:47] "GET / HTTP/1.0" 302 0
+Not Found: /blog/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:47] "GET /blog/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /web/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:48] "GET /web/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4622
+Not Found: /wordpress/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:48] "GET /wordpress/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4640
+Not Found: /website/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:48] "GET /website/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4634
+Not Found: /wp/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:48] "GET /wp/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4619
+Not Found: /news/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:48] "GET /news/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /2018/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:48] "GET /2018/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /2019/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:48] "GET /2019/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /shop/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /shop/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /wp1/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /wp1/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4622
+Not Found: /test/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /test/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /media/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /media/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4628
+Not Found: /wp2/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /wp2/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4622
+Not Found: /site/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /site/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /cms/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /cms/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4622
+Not Found: /sito/wp-includes/wlwmanifest.xml
+[30/Apr/2026 10:08:49] "GET /sito/wp-includes/wlwmanifest.xml HTTP/1.0" 404 4625
+Not Found: /wp-admin/install.php
+[30/Apr/2026 11:06:16] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 11:17:33] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /robots.txt
+[30/Apr/2026 11:23:04] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /favicon.ico
+[30/Apr/2026 11:23:05] "GET /favicon.ico HTTP/1.0" 404 4562
+[30/Apr/2026 11:37:25] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 11:37:26] "GET /login/?next=/ HTTP/1.0" 200 1963
+[30/Apr/2026 11:55:22] "GET / HTTP/1.0" 302 0
+[30/Apr/2026 11:55:23] "GET /login/?next=/ HTTP/1.0" 200 1963
+[30/Apr/2026 12:09:31] "HEAD / HTTP/1.0" 302 0
+[30/Apr/2026 12:09:32] "HEAD /login/?next=/ HTTP/1.0" 200 0
+Not Found: /wp-admin/install.php
+[30/Apr/2026 12:12:14] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 12:18:31] "GET /robots.txt HTTP/1.0" 404 4559
+Not Found: /robots.txt
+[30/Apr/2026 12:43:44] "GET /robots.txt HTTP/1.0" 404 4559
+Invalid HTTP_HOST header: 'proxy2.proxiesfood.com:443'. You may need to add 'proxy2.proxiesfood.com' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/utils/deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/http/request.py", line 206, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'proxy2.proxiesfood.com:443'. You may need to add 'proxy2.proxiesfood.com' to ALLOWED_HOSTS.
+[30/Apr/2026 12:56:26] "CONNECT proxy2.proxiesfood.com:443 HTTP/1.1" 400 64209
+Invalid HTTP_HOST header: 'proxy2.proxiesfood.com:443'. You may need to add 'proxy2.proxiesfood.com' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/utils/deprecation.py", line 308, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/http/request.py", line 206, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'proxy2.proxiesfood.com:443'. You may need to add 'proxy2.proxiesfood.com' to ALLOWED_HOSTS.
+[30/Apr/2026 12:56:26] "CONNECT proxy2.proxiesfood.com:443 HTTP/1.1" 400 64209
+[30/Apr/2026 12:56:41,266] - Broken pipe from ('185.93.89.191', 23311)
+Not Found: /wp-admin/install.php
+[30/Apr/2026 13:10:53] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+[30/Apr/2026 14:01:02] code 400, message Bad request version ('encoding="UTF-8"?>')
+[30/Apr/2026 14:01:02] "1111\xf8\x00\x00\x00\x04\x00\x00\x01\x1b\t\x00\x00\x02\x01\x00\x00\xe8\x00\x00\x00admin\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00queryBasicCfg\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00<?xml version="1.0" encoding="UTF-8"?>" 400 -
+Not Found: /wp-admin/install.php
+[30/Apr/2026 14:11:37] "GET /wp-admin/install.php?step=1 HTTP/1.0" 404 4596
+Not Found: /robots.txt
+[30/Apr/2026 14:13:12] "GET /robots.txt HTTP/1.0" 404 4559
+[30/Apr/2026 14:29:58] "GET / HTTP/1.0" 200 325078
+[30/Apr/2026 14:30:01] "GET /notes/ HTTP/1.0" 200 7326
+Not Found: /favicon.ico
+[30/Apr/2026 14:30:01] "GET /favicon.ico HTTP/1.0" 404 4562
+[30/Apr/2026 14:30:05] "GET / HTTP/1.0" 200 325078
+[30/Apr/2026 14:30:12] "GET /get-note/5/ HTTP/1.0" 200 28
+[30/Apr/2026 14:30:25] "POST /save-note/ HTTP/1.0" 200 36
+[30/Apr/2026 14:30:25] "GET /get-note/5/ HTTP/1.0" 200 92
+[30/Apr/2026 14:30:27] "GET /notes/ HTTP/1.0" 200 8652
+[30/Apr/2026 14:30:34] "POST /add-note-comment/ HTTP/1.0" 200 125
