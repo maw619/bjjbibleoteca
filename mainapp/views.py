@@ -18,13 +18,15 @@ def notes_list(request):
     )
 
     table_names = connection.introspection.table_names()
-    if "mainapp_notecomment" in table_names:
+    has_comments_table = "mainapp_notecomment" in table_names
+    if has_comments_table:
         notes = notes.prefetch_related("comments__user")
 
     notes = notes.order_by("-updated_at")
 
     return render(request, "notes.html", {
-        "notes": notes
+        "notes": notes,
+        "has_comments_table": has_comments_table,
     })
 
 

@@ -227,25 +227,31 @@ body {
 
       <div class="comments" onclick="event.stopPropagation()">
         <div class="comment-list" id="comments-{{ note.id }}">
-          {% for comment in note.comments.all %}
-            <div class="comment-item" id="comment-{{ comment.id }}">
-              <div class="comment-header">
-                <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
-                {% if comment.user == user %}
-                  <button class="comment-delete-btn" onclick="deleteComment(event, {{ comment.id }})">Delete</button>
-                {% endif %}
+          {% if has_comments_table %}
+            {% for comment in note.comments.all %}
+              <div class="comment-item" id="comment-{{ comment.id }}">
+                <div class="comment-header">
+                  <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
+                  {% if comment.user == user %}
+                    <button class="comment-delete-btn" onclick="deleteComment(event, {{ comment.id }})">Delete</button>
+                  {% endif %}
+                </div>
+                <div>{{ comment.content }}</div>
               </div>
-              <div>{{ comment.content }}</div>
-            </div>
-          {% empty %}
-            <div class="comment-meta" id="comments-empty-{{ note.id }}">No comments yet.</div>
-          {% endfor %}
+            {% empty %}
+              <div class="comment-meta" id="comments-empty-{{ note.id }}">No comments yet.</div>
+            {% endfor %}
+          {% else %}
+            <div class="comment-meta" id="comments-empty-{{ note.id }}">Comments unavailable until migrations are run.</div>
+          {% endif %}
         </div>
 
-        <form class="comment-form" onsubmit="addComment(event, {{ note.id }})">
-          <input class="comment-input" id="comment-input-{{ note.id }}" type="text" placeholder="Add a comment" required>
-          <button class="comment-btn" type="submit">Post</button>
-        </form>
+        {% if has_comments_table %}
+          <form class="comment-form" onsubmit="addComment(event, {{ note.id }})">
+            <input class="comment-input" id="comment-input-{{ note.id }}" type="text" placeholder="Add a comment" required>
+            <button class="comment-btn" type="submit">Post</button>
+          </form>
+        {% endif %}
       </div>
     </div>
     {% empty %}
