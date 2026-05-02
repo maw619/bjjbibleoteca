@@ -12,22 +12,30 @@ from django.db.utils import OperationalError, ProgrammingError
 
 @login_required
 def notes_list(request):
-    notes = Note.objects.select_related(
-        "user",
-        "video",
-        "video__section"
-    ).prefetch_related("comments__user", "likes__user")
-
     table_names = connection.introspection.table_names()
     has_comments_table = "mainapp_notecomment" in table_names
     has_likes_table = "mainapp_notelike" in table_names
 
+    notes_query = Note.objects.select_related(
+        "user",
+        "video",
+        "video__section"
+    )
     if has_comments_table:
-        notes = notes.prefetch_related("comments__user")
+        notes_query = notes_query.prefetch_related("comments__user")
     if has_likes_table:
-        notes = notes.prefetch_related("likes__user")
+        notes_query = notes_query.prefetch_related("likes__user")
 
-    notes = notes.order_by("-updated_at")
+    notes_query = notes_query.order_by("-updated_at")
+    try:
+        notes = list(notes_query)
+    except (OperationalError, ProgrammingError):
+        has_comments_table = False
+        has_likes_table = "mainapp_notelike" in connection.introspection.table_names()
+        fallback_query = Note.objects.select_related("user", "video", "video__section").order_by("-updated_at")
+        if has_likes_table:
+            fallback_query = fallback_query.prefetch_related("likes__user")
+        notes = list(fallback_query)
 
     return render(request, "notes.html", {
         "notes": notes,
