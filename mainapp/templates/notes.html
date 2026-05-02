@@ -180,10 +180,61 @@ body {
   padding: 8px 12px;
   cursor: pointer;
 }
+
+.like-row {
+  margin-top: 10px;
+  background: #0f172a;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.like-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  background: #334155;
+  color: #fff;
+}
+
+.like-btn.active {
+  background: #ec4899;
+}
+
+.liked-users {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease, bottom 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  bottom: 40px;
+}
+
+.toast.error {
+  background: #ef4444;
+}
 </style>
 </head>
 
 <body>
+<div id="toast" class="toast"></div>
 
 <div class="topbar">
   <a href="{% url 'home' %}">Videos</a>
@@ -219,33 +270,53 @@ body {
         <h3>posted by: {{ note.user.username }} • 
         {{ note.updated_at|timesince }} ago</h4>
       </div>
+      <div class="like-row" onclick="event.stopPropagation()">
+        {% if has_likes_table %}
+          {% with like_users=note.likes.all %}
+            <button type="button"
+                    class="like-btn {% for like in like_users %}{% if like.user_id == user.id %}active{% endif %}{% endfor %}"
+                    onclick="toggleLike(event, {{ note.id }}, this)">
+              ❤️ Like (<span class="like-count">{{ like_users|length }}</span>)
+            </button>
+            <div class="liked-users">Liked by: <span class="liked-users-list">{% for like in like_users %}{{ like.user.username }}{% if not forloop.last %}, {% endif %}{% empty %}No likes yet{% endfor %}</span></div>
+          {% endwith %}
+        {% else %}
+          <div class="liked-users">Likes unavailable until migrations are run.</div>
+        {% endif %}
+      </div>
         {% if note.user == user %}
-        <button class="delete-btn" onclick="deleteNote(event, this)">
+        <button type="button" class="delete-btn" onclick="return deleteNote(event, this)">
             Delete
         </button>
         {% endif %}
 
       <div class="comments" onclick="event.stopPropagation()">
         <div class="comment-list" id="comments-{{ note.id }}">
-          {% for comment in note.comments.all %}
-            <div class="comment-item" id="comment-{{ comment.id }}">
-              <div class="comment-header">
-                <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
-                {% if comment.user == user %}
-                  <button class="comment-delete-btn" onclick="deleteComment(event, {{ comment.id }})">Delete</button>
-                {% endif %}
+          {% if has_comments_table %}
+            {% for comment in note.comments.all %}
+              <div class="comment-item" id="comment-{{ comment.id }}">
+                <div class="comment-header">
+                  <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
+                  {% if comment.user == user %}
+                    <button class="comment-delete-btn" onclick="deleteComment(event, {{ comment.id }})">Delete</button>
+                  {% endif %}
+                </div>
+                <div>{{ comment.content }}</div>
               </div>
-              <div>{{ comment.content }}</div>
-            </div>
-          {% empty %}
-            <div class="comment-meta" id="comments-empty-{{ note.id }}">No comments yet.</div>
-          {% endfor %}
+            {% empty %}
+              <div class="comment-meta" id="comments-empty-{{ note.id }}">No comments yet.</div>
+            {% endfor %}
+          {% else %}
+            <div class="comment-meta" id="comments-empty-{{ note.id }}">Comments unavailable until migrations are run.</div>
+          {% endif %}
         </div>
 
-        <form class="comment-form" onsubmit="addComment(event, {{ note.id }})">
-          <input class="comment-input" id="comment-input-{{ note.id }}" type="text" placeholder="Add a comment" required>
-          <button class="comment-btn" type="submit">Post</button>
-        </form>
+        {% if has_comments_table %}
+          <form class="comment-form" onsubmit="addComment(event, {{ note.id }})">
+            <input class="comment-input" id="comment-input-{{ note.id }}" type="text" placeholder="Add a comment" required>
+            <button class="comment-btn" type="submit">Post</button>
+          </form>
+        {% endif %}
       </div>
     </div>
     {% empty %}
@@ -358,6 +429,19 @@ function closeModal() {
   video.src = "";
 }
 
+function showToast(message, isError = false) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.innerText = message;
+  toast.classList.toggle("error", isError);
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
+
 // Close when clicking outside
 window.onclick = function(event) {
   const modal = document.getElementById("videoModal");
@@ -368,6 +452,7 @@ window.onclick = function(event) {
 
 
 function deleteNote(event, button) {
+  event.preventDefault();
   event.stopPropagation();
 
   const card = button.closest(".card");
@@ -407,6 +492,37 @@ function deleteNote(event, button) {
     console.error(err);
     showToast("Error deleting note", true);
   });
+
+  return false;
+}
+
+function toggleLike(event, noteId, button) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  fetch('/toggle-note-like/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ note_id: noteId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status !== 'success') {
+      showToast(data.error || 'Like failed', true);
+      return;
+    }
+
+    button.classList.toggle('active', data.liked);
+    button.querySelector('.like-count').innerText = data.count;
+
+    const usersText = data.users.length ? data.users.join(', ') : 'No likes yet';
+    const usersContainer = button.parentElement.querySelector('.liked-users-list');
+    if (usersContainer) usersContainer.innerText = usersText;
+  })
+  .catch(() => showToast('Like failed', true));
 }
 
 function getCookie(name) {
@@ -423,7 +539,6 @@ function getCookie(name) {
   return cookieValue;
 }
 
-showToast("Note deleted");
 </script>
 
 </body>
