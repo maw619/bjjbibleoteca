@@ -19,12 +19,19 @@ def notes_list(request):
     ).prefetch_related("comments__user", "likes__user")
 
     table_names = connection.introspection.table_names()
+    has_comments_table = "mainapp_notecomment" in table_names
     has_likes_table = "mainapp_notelike" in table_names
+
+    if has_comments_table:
+        notes = notes.prefetch_related("comments__user")
+    if has_likes_table:
+        notes = notes.prefetch_related("likes__user")
 
     notes = notes.order_by("-updated_at")
 
     return render(request, "notes.html", {
         "notes": notes,
+        "has_comments_table": has_comments_table,
         "has_likes_table": has_likes_table,
     })
 
