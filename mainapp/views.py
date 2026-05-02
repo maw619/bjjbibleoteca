@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from .models import Category, Note, Video, NoteComment
+from .models import Category, Note, Video, NoteComment, NoteLike
 import json
 from django.utils import timezone
 from django.db import connection
@@ -18,13 +18,20 @@ def notes_list(request):
     )
 
     table_names = connection.introspection.table_names()
-    if "mainapp_notecomment" in table_names:
+    has_comments_table = "mainapp_notecomment" in table_names
+    has_likes_table = "mainapp_notelike" in table_names
+
+    if has_comments_table:
         notes = notes.prefetch_related("comments__user")
+    if has_likes_table:
+        notes = notes.prefetch_related("likes__user")
 
     notes = notes.order_by("-updated_at")
 
     return render(request, "notes.html", {
-        "notes": notes
+        "notes": notes,
+        "has_comments_table": has_comments_table,
+        "has_likes_table": has_likes_table,
     })
 
 
@@ -85,6 +92,40 @@ def delete_note_comment(request):
         print("ERROR:", e)
         return JsonResponse({"error": "Server error"}, status=500)
 
+
+@require_POST
+@login_required
+def toggle_note_like(request):
+    try:
+        if "mainapp_notelike" not in connection.introspection.table_names():
+            return JsonResponse({"error": "Likes table is missing. Run migrations first."}, status=503)
+
+        data = json.loads(request.body.decode("utf-8"))
+        note_id = data.get("note_id")
+        if not note_id:
+            return JsonResponse({"error": "Missing note id"}, status=400)
+
+        note = Note.objects.get(id=note_id)
+        like, created = NoteLike.objects.get_or_create(note=note, user=request.user)
+        if not created:
+            like.delete()
+            liked = False
+        else:
+            liked = True
+
+        likes = NoteLike.objects.filter(note=note).select_related("user")
+        return JsonResponse({
+            "status": "success",
+            "liked": liked,
+            "count": likes.count(),
+            "users": [like.user.username for like in likes],
+        })
+    except Note.DoesNotExist:
+        return JsonResponse({"error": "Note not found"}, status=404)
+    except Exception as e:
+        print("ERROR:", e)
+        return JsonResponse({"error": "Server error"}, status=500)
+
 @login_required
 def save_note(request):
     if request.method == "POST":
@@ -125,6 +166,21 @@ def delete_note(request):
 
     except Note.DoesNotExist:
         return JsonResponse({"error": "Not allowed"}, status=403)
+    except (OperationalError, ProgrammingError):
+        table_names = connection.introspection.table_names()
+        if "mainapp_notecomment" in table_names:
+            return JsonResponse({"error": "Server error"}, status=500)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "DELETE FROM mainapp_note WHERE id = %s AND user_id = %s",
+                [note_id, request.user.id],
+            )
+            deleted_rows = cursor.rowcount
+
+        if deleted_rows:
+            return JsonResponse({"status": "deleted"})
+        return JsonResponse({"error": "Not allowed"}, status=403)
 
     except Exception as e:
         print("ERROR:", e)
@@ -161,10 +217,19 @@ def video_dropdown(request):
     noted_video_ids = set(
         Note.objects.filter(user=request.user).values_list("video_id", flat=True)
     )
- 
+
+    recent_notes = Note.objects.select_related("user", "video").order_by("-updated_at")[:12]
+
+    table_names = connection.introspection.table_names()
+    has_comments_table = "mainapp_notecomment" in table_names
+    if has_comments_table:
+        recent_notes = recent_notes.prefetch_related("comments__user")
+
     return render(request, 'videos.html', {
         'categories': categories,
         'noted_video_ids': noted_video_ids,
+        'recent_notes': recent_notes,
+        'has_comments_table': has_comments_table,
     })
 
 from django.contrib.auth import login, logout
