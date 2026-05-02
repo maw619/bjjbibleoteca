@@ -324,6 +324,7 @@ button:hover {
 
       <!-- VIDEO -->
       <video controls playsinline></video>
+      <button class="video-like-btn" onclick="toggleVideoLike(this)" data-liked="false">🤍 Like <span class="video-like-count">0</span></button>
 
       <!-- NOTES -->
       <div class="note-container">
@@ -397,6 +398,7 @@ function playVideo(select) {
   card.dataset.videoId = videoId;
 
   loadNotes(card, videoId);
+  loadVideoLike(card, videoId);
 }
 
 function saveNote(button) {
@@ -437,6 +439,7 @@ function saveNote(button) {
     showToast(`Saved at ${formattedTime} — ${videoTitle}`);
     textarea.value = "";
     loadNotes(card, videoId);
+  loadVideoLike(card, videoId);
   })
   .catch(() => {
     showToast("Error saving note", true);
@@ -509,6 +512,45 @@ function deleteNoteFromCard(event, noteId, button) {
   .catch(() => {
     showToast("Error deleting note", true);
   });
+}
+
+
+function loadVideoLike(card, videoId) {
+  fetch(`/get-video-like/${videoId}/`)
+    .then(res => res.json())
+    .then(data => {
+      const button = card.querySelector('.video-like-btn');
+      button.dataset.liked = data.liked ? 'true' : 'false';
+      button.innerHTML = `${data.liked ? '💗' : '🤍'} Like <span class="video-like-count">${data.count}</span>`;
+    });
+}
+
+function toggleVideoLike(button) {
+  const card = button.closest('.card');
+  const videoId = card.dataset.videoId;
+  if (!videoId) {
+    showToast('Please select a video first', true);
+    return;
+  }
+
+  fetch('/toggle-video-like/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ video_id: videoId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status !== 'success') {
+      showToast(data.error || 'Could not update like', true);
+      return;
+    }
+    button.dataset.liked = data.liked ? 'true' : 'false';
+    button.innerHTML = `${data.liked ? '💗' : '🤍'} Like <span class="video-like-count">${data.count}</span>`;
+  })
+  .catch(() => showToast('Error updating like', true));
 }
 
 function escapeHtml(text) {
