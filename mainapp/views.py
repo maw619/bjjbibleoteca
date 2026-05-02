@@ -10,11 +10,26 @@ from django.db.models import Count
 from django.db.utils import OperationalError, ProgrammingError
 
 
+def _comments_table_available():
+    try:
+        NoteComment.objects.exists()
+        return True
+    except (OperationalError, ProgrammingError):
+        return False
+
+
+def _likes_table_available():
+    try:
+        NoteLike.objects.exists()
+        return True
+    except (OperationalError, ProgrammingError):
+        return False
+
+
 @login_required
 def notes_list(request):
-    table_names = connection.introspection.table_names()
-    has_comments_table = "mainapp_notecomment" in table_names
-    has_likes_table = "mainapp_notelike" in table_names
+    has_comments_table = _comments_table_available()
+    has_likes_table = _likes_table_available()
 
     notes_query = Note.objects.select_related(
         "user",
@@ -31,7 +46,7 @@ def notes_list(request):
         notes = list(notes_query)
     except (OperationalError, ProgrammingError):
         has_comments_table = False
-        has_likes_table = "mainapp_notelike" in connection.introspection.table_names()
+        has_likes_table = _likes_table_available()
         fallback_query = Note.objects.select_related("user", "video", "video__section").order_by("-updated_at")
         if has_likes_table:
             fallback_query = fallback_query.prefetch_related("likes__user")
@@ -48,6 +63,9 @@ def notes_list(request):
 @login_required
 def add_note_comment(request):
     try:
+        if not _comments_table_available():
+            return JsonResponse({"error": "Comments unavailable in current DB. Run migrate to create base tables."}, status=503)
+
         data = json.loads(request.body.decode("utf-8"))
         note_id = data.get("note_id")
         content = (data.get("content") or "").strip()
@@ -229,8 +247,7 @@ def video_dropdown(request):
 
     recent_notes = Note.objects.select_related("user", "video").order_by("-updated_at")[:12]
 
-    table_names = connection.introspection.table_names()
-    has_comments_table = "mainapp_notecomment" in table_names
+    has_comments_table = _comments_table_available()
     if has_comments_table:
         recent_notes = recent_notes.prefetch_related("comments__user")
 

@@ -247,7 +247,7 @@ body {
     <h2 style="text-align:center;">Training Notes</h2>
     {% if not has_comments_table %}
       <div class="card" style="border:1px solid #f59e0b; color:#fef3c7;">
-        Comments are temporarily unavailable because the comments table is missing. Run migrations to enable note comments.
+        Comments are unavailable in this database right now. Run <code>python manage.py migrate</code> to sync tables.
       </div>
     {% endif %}
 
