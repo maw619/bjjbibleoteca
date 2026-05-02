@@ -27,6 +27,14 @@ body {
   max-width: 600px;
 }
 
+.layout {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 18px;
+}
+
 /* Card */
 .card {
   background: #020617;
@@ -178,6 +186,64 @@ button:hover {
 
   box-sizing: border-box; /* 🔥 FIX */
 }
+
+.notes-sidebar {
+  background: #020617;
+  border-radius: 16px;
+  padding: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  height: fit-content;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.sidebar-subtitle {
+  margin: 0 0 14px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.sidebar-note {
+  background: #0f172a;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.sidebar-note-meta {
+  font-size: 12px;
+  color: #93c5fd;
+  margin-bottom: 6px;
+}
+
+.sidebar-note-content {
+  font-size: 13px;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+}
+
+.sidebar-comments {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #1e293b;
+}
+
+.sidebar-comment {
+  font-size: 12px;
+  color: #cbd5e1;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
@@ -195,6 +261,7 @@ button:hover {
 </div>
 
 <div class="container">
+  <div class="layout">
   <div class="wrapper">
 
     {% for category in categories %}
@@ -235,6 +302,30 @@ button:hover {
     {% endfor %}
 
   </div>
+
+  <aside class="notes-sidebar">
+    <h3 class="sidebar-title">Notes Activity</h3>
+    <p class="sidebar-subtitle">Latest notes and comments from the notes page.</p>
+    {% for note in recent_notes %}
+      <div class="sidebar-note">
+        <div class="sidebar-note-meta">
+          {{ note.user.username }} • {{ note.video.title }} • {{ note.updated_at|timesince }} ago
+        </div>
+        <div class="sidebar-note-content">{{ note.content }}</div>
+        {% if has_comments_table and note.comments.all %}
+        <div class="sidebar-comments">
+          {% for comment in note.comments.all|slice:":2" %}
+            <div class="sidebar-comment"><strong>{{ comment.user.username }}:</strong> {{ comment.content }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p style="color:#94a3b8;">No notes yet.</p>
+    {% endfor %}
+    <a href="{% url 'notes' %}" style="color:#60a5fa;">Open full notes page →</a>
+  </aside>
+</div>
 </div>
 
 <script>
