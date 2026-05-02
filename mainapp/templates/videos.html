@@ -341,7 +341,22 @@ button:hover {
   </div>
 
   <aside class="notes-sidebar">
-    <h3 class="sidebar-title">Notes Activity</h3>
+    <h3 class="sidebar-title">❤️ Liked Videos</h3>
+    <p class="sidebar-subtitle">Quick access to videos you hearted.</p>
+    {% for video in liked_videos %}
+      <div class="sidebar-note"
+           data-url="{{ video.url }}"
+           data-timestamp="0"
+           data-title="{{ video.title|escapejs }}"
+           onclick="openSidebarVideoModal(this)">
+        <div class="sidebar-note-meta">{{ video.section.name }}</div>
+        <div class="sidebar-note-content">{{ video.title }}</div>
+      </div>
+    {% empty %}
+      <p style="color:#94a3b8;">No liked videos yet.</p>
+    {% endfor %}
+
+    <h3 class="sidebar-title" style="margin-top:18px;">Notes Activity</h3>
     <p class="sidebar-subtitle">Latest notes and comments from the notes page.</p>
     {% for note in recent_notes %}
       <div class="sidebar-note"

@@ -296,10 +296,11 @@ def video_dropdown(request):
         Note.objects.filter(user=request.user).values_list("video_id", flat=True)
     )
     liked_video_ids = set()
+    liked_videos = []
     if _video_likes_table_available():
-        liked_video_ids = set(
-            VideoLike.objects.filter(user=request.user).values_list("video_id", flat=True)
-        )
+        liked_video_qs = VideoLike.objects.filter(user=request.user).select_related("video").order_by("-created_at")
+        liked_video_ids = set(liked_video_qs.values_list("video_id", flat=True))
+        liked_videos = [row.video for row in liked_video_qs[:12]]
 
     recent_notes = Note.objects.select_related("user", "video").order_by("-updated_at")[:12]
 
@@ -312,6 +313,7 @@ def video_dropdown(request):
         'noted_video_ids': noted_video_ids,
         'liked_video_ids': liked_video_ids,
         'recent_notes': recent_notes,
+        'liked_videos': liked_videos,
         'has_comments_table': has_comments_table,
     })
 
