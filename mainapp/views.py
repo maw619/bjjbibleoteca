@@ -2,13 +2,36 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from .models import Category, Note, Video, NoteComment, NoteLike, VideoLike
+from .models import Category, Note, Video, NoteComment, NoteLike, VideoLike, PushSubscription
 import json
 from django.utils import timezone
 from django.db import connection
 from django.db.models import Count
+from django.conf import settings
 from django.db.utils import OperationalError, ProgrammingError
 
+
+
+
+def _notify_user_push(user, title, body):
+    if not settings.WEB_PUSH_PUBLIC_KEY or not settings.WEB_PUSH_PRIVATE_KEY:
+        return
+    try:
+        from pywebpush import webpush, WebPushException
+    except Exception:
+        return
+
+    payload = json.dumps({"title": title, "body": body})
+    for sub in PushSubscription.objects.filter(user=user):
+        try:
+            webpush(
+                subscription_info=sub.as_webpush_dict(),
+                data=payload,
+                vapid_private_key=settings.WEB_PUSH_PRIVATE_KEY,
+                vapid_claims={"sub": settings.WEB_PUSH_CLAIMS_SUB},
+            )
+        except Exception:
+            continue
 
 def _comments_table_available():
     try:
@@ -128,6 +151,28 @@ def delete_note_comment(request):
         return JsonResponse({"error": "Server error"}, status=500)
 
 
+
+@require_POST
+@login_required
+def save_push_subscription(request):
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        endpoint = data.get("endpoint")
+        keys = data.get("keys", {})
+        p256dh = keys.get("p256dh")
+        auth = keys.get("auth")
+
+        if not endpoint or not p256dh or not auth:
+            return JsonResponse({"error": "Invalid subscription"}, status=400)
+
+        PushSubscription.objects.update_or_create(
+            endpoint=endpoint,
+            defaults={"user": request.user, "p256dh": p256dh, "auth": auth},
+        )
+        return JsonResponse({"status": "success"})
+    except Exception:
+        return JsonResponse({"error": "Server error"}, status=500)
+
 @require_POST
 @login_required
 def toggle_note_like(request):
@@ -183,6 +228,7 @@ def toggle_video_like(request):
             liked = True
 
         likes = VideoLike.objects.filter(video=video)
+        _notify_user_push(request.user, "Video liked" if liked else "Video unliked", video.title)
         return JsonResponse({
             "status": "success",
             "liked": liked,
@@ -226,6 +272,7 @@ def save_note(request):
             timestamp=float(timestamp)
         )
 
+        _notify_user_push(request.user, "Note saved", f"{video.title}")
         return JsonResponse({"status": "success", "note_id": note.id})
     
 @require_POST
@@ -315,6 +362,7 @@ def video_dropdown(request):
         'recent_notes': recent_notes,
         'liked_videos': liked_videos,
         'has_comments_table': has_comments_table,
+        'web_push_public_key': settings.WEB_PUSH_PUBLIC_KEY,
     })
 
 from django.contrib.auth import login, logout

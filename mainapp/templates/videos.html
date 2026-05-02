@@ -749,21 +749,46 @@ function formatTime(seconds) {
 }
 
 
-function requestSiteNotifications() {
-  if (!('Notification' in window)) {
-    showToast('Notifications are not supported on this browser', true);
+async function requestSiteNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    showToast('Push notifications are not supported on this browser', true);
     return;
   }
 
-  Notification.requestPermission().then((permission) => {
-    if (permission === 'granted') {
-      showToast('Notifications enabled');
-      updateNotificationButton();
-    } else {
-      showToast('Notification permission was not granted', true);
-      updateNotificationButton();
-    }
-  });
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    showToast('Notification permission was not granted', true);
+    updateNotificationButton();
+    return;
+  }
+
+  const publicKey = '{{ web_push_public_key|escapejs }}';
+  if (!publicKey) {
+    showToast('Push key is not configured on server', true);
+    return;
+  }
+
+  try {
+    const reg = await navigator.serviceWorker.register('{% static "sw.js" %}');
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
+    });
+
+    await fetch('/save-push-subscription/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify(sub),
+    });
+
+    showToast('Push notifications enabled');
+    updateNotificationButton();
+  } catch (e) {
+    showToast('Could not enable push notifications', true);
+  }
 }
 
 function sendSiteNotification(title, body) {

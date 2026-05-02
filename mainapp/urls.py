@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register_view, login_view, logout_view, video_dropdown, save_note, get_note, notes_list, delete_note, add_note_comment, delete_note_comment, toggle_note_like, toggle_video_like, get_video_like
+from .views import register_view, login_view, logout_view, video_dropdown, save_note, get_note, notes_list, delete_note, add_note_comment, delete_note_comment, toggle_note_like, toggle_video_like, get_video_like, save_push_subscription
 
 urlpatterns = [
     path("", video_dropdown, name="home"),
@@ -15,4 +15,5 @@ urlpatterns = [
     path("toggle-note-like/", toggle_note_like, name="toggle_note_like"),
     path("toggle-video-like/", toggle_video_like, name="toggle_video_like"),
     path("get-video-like/<int:video_id>/", get_video_like, name="get_video_like"),
+    path("save-push-subscription/", save_push_subscription, name="save_push_subscription"),
 ]
