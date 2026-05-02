@@ -300,12 +300,6 @@ button:hover {
 <div class="container">
   <div class="layout">
   <div class="wrapper">
-    {% if not has_comments_table %}
-      <div class="card" style="border:1px solid #f59e0b; color:#fef3c7;">
-        Comments migration not detected yet — section commenter counts are currently 0.
-      </div>
-    {% endif %}
-
     {% for category in categories %}
     <div class="card"> 
 

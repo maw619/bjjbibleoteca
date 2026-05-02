@@ -223,20 +223,8 @@ def video_dropdown(request):
 
     table_names = connection.introspection.table_names()
     has_comments_table = "mainapp_notecomment" in table_names
-    section_comment_user_counts = {}
     if has_comments_table:
         recent_notes = recent_notes.prefetch_related("comments__user")
-        section_comment_user_counts = {
-            row["note__video__section_id"]: row["user_count"]
-            for row in (
-                NoteComment.objects
-                .values("note__video__section_id")
-                .annotate(user_count=Count("user_id", distinct=True))
-            )
-        }
-    for category in categories:
-        for section in category.sections.all():
-            section.commenter_count = section_comment_user_counts.get(section.id, 0)
 
     return render(request, 'videos.html', {
         'categories': categories,
