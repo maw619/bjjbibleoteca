@@ -161,10 +161,19 @@ def video_dropdown(request):
     noted_video_ids = set(
         Note.objects.filter(user=request.user).values_list("video_id", flat=True)
     )
- 
+
+    recent_notes = Note.objects.select_related("user", "video").order_by("-updated_at")[:12]
+
+    table_names = connection.introspection.table_names()
+    has_comments_table = "mainapp_notecomment" in table_names
+    if has_comments_table:
+        recent_notes = recent_notes.prefetch_related("comments__user")
+
     return render(request, 'videos.html', {
         'categories': categories,
         'noted_video_ids': noted_video_ids,
+        'recent_notes': recent_notes,
+        'has_comments_table': has_comments_table,
     })
 
 from django.contrib.auth import login, logout
