@@ -18,13 +18,15 @@ def notes_list(request):
     )
 
     table_names = connection.introspection.table_names()
-    if "mainapp_notecomment" in table_names:
+    has_comments_table = "mainapp_notecomment" in table_names
+    if has_comments_table:
         notes = notes.prefetch_related("comments__user")
 
     notes = notes.order_by("-updated_at")
 
     return render(request, "notes.html", {
-        "notes": notes
+        "notes": notes,
+        "has_comments_table": has_comments_table,
     })
 
 
@@ -125,6 +127,21 @@ def delete_note(request):
 
     except Note.DoesNotExist:
         return JsonResponse({"error": "Not allowed"}, status=403)
+    except (OperationalError, ProgrammingError):
+        table_names = connection.introspection.table_names()
+        if "mainapp_notecomment" in table_names:
+            return JsonResponse({"error": "Server error"}, status=500)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "DELETE FROM mainapp_note WHERE id = %s AND user_id = %s",
+                [note_id, request.user.id],
+            )
+            deleted_rows = cursor.rowcount
+
+        if deleted_rows:
+            return JsonResponse({"status": "deleted"})
+        return JsonResponse({"error": "Not allowed"}, status=403)
 
     except Exception as e:
         print("ERROR:", e)
@@ -161,10 +178,19 @@ def video_dropdown(request):
     noted_video_ids = set(
         Note.objects.filter(user=request.user).values_list("video_id", flat=True)
     )
- 
+
+    recent_notes = Note.objects.select_related("user", "video").order_by("-updated_at")[:12]
+
+    table_names = connection.introspection.table_names()
+    has_comments_table = "mainapp_notecomment" in table_names
+    if has_comments_table:
+        recent_notes = recent_notes.prefetch_related("comments__user")
+
     return render(request, 'videos.html', {
         'categories': categories,
         'noted_video_ids': noted_video_ids,
+        'recent_notes': recent_notes,
+        'has_comments_table': has_comments_table,
     })
 
 from django.contrib.auth import login, logout
