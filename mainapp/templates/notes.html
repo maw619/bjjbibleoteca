@@ -220,7 +220,7 @@ body {
         {{ note.updated_at|timesince }} ago</h4>
       </div>
         {% if note.user == user %}
-        <button class="delete-btn" onclick="deleteNote(event, this)">
+        <button type="button" class="delete-btn" onclick="return deleteNote(event, this)">
             Delete
         </button>
         {% endif %}
@@ -374,6 +374,7 @@ window.onclick = function(event) {
 
 
 function deleteNote(event, button) {
+  event.preventDefault();
   event.stopPropagation();
 
   const card = button.closest(".card");
@@ -413,6 +414,8 @@ function deleteNote(event, button) {
     console.error(err);
     showToast("Error deleting note", true);
   });
+
+  return false;
 }
 
 function getCookie(name) {
@@ -429,7 +432,6 @@ function getCookie(name) {
   return cookieValue;
 }
 
-showToast("Note deleted");
 </script>
 
 </body>
