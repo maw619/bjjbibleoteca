@@ -115,6 +115,10 @@ video {
   background: #dc2626;
 }
 
+.video-action-btn.hidden {
+  display: none;
+}
+
 /* Button */
 button {
   width: 100%;
@@ -373,7 +377,7 @@ button:hover {
 
       <!-- VIDEO -->
       <video controls playsinline></video>
-      <button class="video-like-btn" onclick="toggleVideoLike(this)" data-liked="false">🤍 Like <span class="video-like-count">0</span></button>
+      <button class="video-like-btn video-action-btn hidden" onclick="toggleVideoLike(this)" data-liked="false">🤍 Like <span class="video-like-count">0</span></button>
 
       <!-- NOTES -->
       <div class="note-container">
@@ -382,7 +386,7 @@ button:hover {
 </div>
       <div class="saved-notes"></div>
 
-      <button onclick="saveNote(this)">Save Notes</button>
+      <button class="save-note-btn video-action-btn hidden" onclick="saveNote(this)">Save Notes</button>
 
     </div>
     {% endfor %}
@@ -468,6 +472,17 @@ function playVideo(select) {
 
   loadNotes(card, videoId);
   loadVideoLike(card, videoId);
+  setVideoActionVisibility(card, true);
+}
+
+
+function setVideoActionVisibility(card, visible) {
+  const likeBtn = card.querySelector('.video-like-btn');
+  const saveBtn = card.querySelector('.save-note-btn');
+  [likeBtn, saveBtn].forEach((btn) => {
+    if (!btn) return;
+    btn.classList.toggle('hidden', !visible);
+  });
 }
 
 function saveNote(button) {
@@ -481,6 +496,7 @@ function saveNote(button) {
   const videoId = selected?.getAttribute("data-id");
 
   if (!videoId) {
+    setVideoActionVisibility(card, false);
     showToast("Please select a video first", true);
     return;
   }
@@ -738,6 +754,7 @@ window.addEventListener('resize', () => {
 
 window.addEventListener('DOMContentLoaded', () => {
   closeMobileSidebar();
+  document.querySelectorAll('.card').forEach((card) => setVideoActionVisibility(card, false));
 });
 
 function openSidebarVideoModal(noteCard) {
