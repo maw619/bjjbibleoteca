@@ -364,6 +364,7 @@ button:hover {
   {% if user.is_authenticated %}
     Welcome, {{ user.username }} |
     <a href="{% url 'notes' %}" style="color:#60a5fa; margin-right:10px;">Notes</a>
+    <button id="enableNotificationsBtn" onclick="requestSiteNotifications()" style="width:auto;margin:0 10px 0 0;padding:6px 10px;background:#1e293b;border:1px solid #334155;border-radius:8px;font-size:12px;">Enable Notifications</button>
     <a href="{% url 'logout' %}" style="color:#60a5fa;">Logout</a>
   {% else %}
     <a href="{% url 'login' %}" style="color:#60a5fa;">Login</a> |
@@ -546,7 +547,9 @@ function saveNote(button) {
     textarea.value = "";
     loadNotes(card, videoId);
     loadVideoLike(card, videoId);
-    prependNoteActivity(selected?.dataset.baseTitle || selected?.textContent?.trim() || "Video", selected?.value || "", content, timestamp);
+    const selectedTitle = selected?.dataset.baseTitle || selected?.textContent?.trim() || "Video";
+    prependNoteActivity(selectedTitle, selected?.value || "", content, timestamp);
+    sendSiteNotification("Note saved", `${selectedTitle} at ${formattedTime}`);
   })
   .catch(() => {
     showToast("Error saving note", true);
@@ -659,7 +662,9 @@ function toggleVideoLike(button) {
 
     const select = card.querySelector('select');
     const selected = select?.options[select.selectedIndex];
-    upsertLikedVideo(videoId, selected?.dataset.baseTitle || selected?.textContent?.trim() || 'Video', selected?.value || '', selected?.parentElement?.label || '', data.liked);
+    const selectedTitle = selected?.dataset.baseTitle || selected?.textContent?.trim() || 'Video';
+    upsertLikedVideo(videoId, selectedTitle, selected?.value || '', selected?.parentElement?.label || '', data.liked);
+    sendSiteNotification(data.liked ? 'Video liked' : 'Video unliked', selectedTitle);
   })
   .catch(() => showToast('Error updating like', true));
 }
@@ -743,6 +748,40 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+
+function requestSiteNotifications() {
+  if (!('Notification' in window)) {
+    showToast('Notifications are not supported on this browser', true);
+    return;
+  }
+
+  Notification.requestPermission().then((permission) => {
+    if (permission === 'granted') {
+      showToast('Notifications enabled');
+      updateNotificationButton();
+    } else {
+      showToast('Notification permission was not granted', true);
+      updateNotificationButton();
+    }
+  });
+}
+
+function sendSiteNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, { body });
+  } catch (e) {
+    console.log('Notification error', e);
+  }
+}
+
+function updateNotificationButton() {
+  const btn = document.getElementById('enableNotificationsBtn');
+  if (!btn) return;
+  const enabled = ('Notification' in window) && Notification.permission === 'granted';
+  btn.innerText = enabled ? 'Notifications On' : 'Enable Notifications';
+}
+
 function showToast(message) {
   const toast = document.getElementById("toast");
 
@@ -776,6 +815,7 @@ window.addEventListener('resize', () => {
 window.addEventListener('DOMContentLoaded', () => {
   closeMobileSidebar();
   document.querySelectorAll('.card').forEach((card) => setVideoActionVisibility(card, false));
+  updateNotificationButton();
 });
 
 function openSidebarVideoModal(noteCard) {
