@@ -127,6 +127,21 @@ def delete_note(request):
 
     except Note.DoesNotExist:
         return JsonResponse({"error": "Not allowed"}, status=403)
+    except (OperationalError, ProgrammingError):
+        table_names = connection.introspection.table_names()
+        if "mainapp_notecomment" in table_names:
+            return JsonResponse({"error": "Server error"}, status=500)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "DELETE FROM mainapp_note WHERE id = %s AND user_id = %s",
+                [note_id, request.user.id],
+            )
+            deleted_rows = cursor.rowcount
+
+        if deleted_rows:
+            return JsonResponse({"status": "deleted"})
+        return JsonResponse({"error": "Not allowed"}, status=403)
 
     except Exception as e:
         print("ERROR:", e)
