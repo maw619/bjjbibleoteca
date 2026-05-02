@@ -15629,3 +15629,114 @@ Not Found: /favicon.ico
 [30/Apr/2026 14:30:25] "GET /get-note/5/ HTTP/1.0" 200 92
 [30/Apr/2026 14:30:27] "GET /notes/ HTTP/1.0" 200 8652
 [30/Apr/2026 14:30:34] "POST /add-note-comment/ HTTP/1.0" 200 125
+/home/ubuntu/websites/bjjbibleoteca/mainapp/views.py changed, reloading.
+Performing system checks...
+
+
+You have 1 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): mainapp.
+Run 'python manage.py migrate' to apply them.
+April 29, 2026 - 21:19:52
+Django version 6.0.4, using settings 'bjjlibrary.settings'
+Starting development server at http://0.0.0.0:8001/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Deleting note: 18
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/home/ubuntu/websites/bjjbibleoteca/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/utils/autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/management/commands/runserver.py", line 137, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/core/management/base.py", line 591, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/migrations/loader.py", line 59, in __init__
+    self.build_graph()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/migrations/loader.py", line 282, in build_graph
+    self.load_disk()
+  File "/home/ubuntu/websites/bjjbibleoteca/env/lib/python3.12/site-packages/django/db/migrations/loader.py", line 121, in load_disk
+    migration_module = import_module(migration_path)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 991, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1129, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1059, in source_to_code
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/home/ubuntu/websites/bjjbibleoteca/mainapp/migrations/0005_alter_note_options.py", line 5
+    >>>>>>> 3bdabc9b16dc06f179d348ac84bbc6d6311c94bc
+            ^
+SyntaxError: invalid decimal literal
+/home/ubuntu/websites/bjjbibleoteca/mainapp/migrations/0001_initial.py changed, reloading.
+Performing system checks...
+
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/home/ubuntu/websites/bjjbibleoteca/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/home/ubuntu/websites/bjjbibleoteca/static' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+[02/May/2026 01:10:42] "POST /delete-note/ HTTP/1.0" 200 21
+[02/May/2026 01:10:49] "GET / HTTP/1.0" 200 325078
+[02/May/2026 01:10:51] "GET /get-note/4/ HTTP/1.0" 200 28
+[02/May/2026 01:10:51] "GET /static/favicon.ico HTTP/1.0" 304 0
+[02/May/2026 01:10:57] "POST /save-note/ HTTP/1.0" 200 36
+[02/May/2026 01:10:57] "GET /get-note/4/ HTTP/1.0" 200 91
+[02/May/2026 01:10:58] "GET /notes/ HTTP/1.0" 200 9697
+[02/May/2026 01:11:02] "POST /add-note-comment/ HTTP/1.0" 200 117
+[02/May/2026 01:11:10] "POST /delete-note-comment/ HTTP/1.0" 200 21
+[02/May/2026 01:11:24] "GET /logout/ HTTP/1.0" 302 0
+[02/May/2026 01:11:24] "GET /login/ HTTP/1.0" 200 1963
+[02/May/2026 01:11:27] "POST /login/ HTTP/1.0" 302 0
+[02/May/2026 01:11:28] "GET / HTTP/1.0" 200 325076
+[02/May/2026 01:11:33] "GET /notes/ HTTP/1.0" 200 9581
+[02/May/2026 01:11:38] "POST /add-note-comment/ HTTP/1.0" 200 115
+[02/May/2026 01:11:40] "POST /delete-note-comment/ HTTP/1.0" 200 21
+[02/May/2026 01:11:45] "POST /add-note-comment/ HTTP/1.0" 200 115
+[02/May/2026 01:11:47] "GET / HTTP/1.0" 200 325076
+[02/May/2026 01:11:49] "GET /logout/ HTTP/1.0" 302 0
+[02/May/2026 01:11:49] "GET /login/ HTTP/1.0" 200 1963
+[02/May/2026 01:11:53] "POST /login/ HTTP/1.0" 302 0
+[02/May/2026 01:11:53] "GET / HTTP/1.0" 200 325083
+[02/May/2026 01:11:59] "GET /notes/ HTTP/1.0" 200 9867
+[02/May/2026 01:12:07] "GET /logout/ HTTP/1.0" 302 0
+[02/May/2026 01:12:07] "GET /login/ HTTP/1.0" 200 1963
+[02/May/2026 01:12:10] "POST /login/ HTTP/1.0" 302 0
+[02/May/2026 01:12:10] "GET / HTTP/1.0" 200 325083
+[02/May/2026 01:12:13] "GET /notes/ HTTP/1.0" 200 9867
+[02/May/2026 01:12:14] "GET /logout/ HTTP/1.0" 302 0
+[02/May/2026 01:12:14] "GET /login/ HTTP/1.0" 200 1963
+[02/May/2026 01:12:20] "POST /login/ HTTP/1.0" 302 0
+[02/May/2026 01:12:20] "GET / HTTP/1.0" 200 325083
+[02/May/2026 01:12:22] "GET /notes/ HTTP/1.0" 200 9867
+[02/May/2026 01:12:24] "POST /delete-note/ HTTP/1.0" 200 21
+[02/May/2026 01:13:23] "GET / HTTP/1.0" 200 325078
