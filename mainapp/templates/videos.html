@@ -300,6 +300,11 @@ button:hover {
 <div class="container">
   <div class="layout">
   <div class="wrapper">
+    {% if not has_comments_table %}
+      <div class="card" style="border:1px solid #f59e0b; color:#fef3c7;">
+        Comments migration not detected yet — section commenter counts are currently 0.
+      </div>
+    {% endif %}
 
     {% for category in categories %}
     <div class="card"> 
@@ -313,7 +318,7 @@ button:hover {
         <option disabled selected>Select a video</option>
 
         {% for section in category.sections.all %}
-        <optgroup label="{{ section.name }}{% if has_comments_table %} ({{ section.commenter_count }} commenters){% endif %}">
+        <optgroup label="{{ section.name }} ({{ section.commenter_count }} commenters)">
           {% for video in section.videos.all %}
           <option value="{{ video.url }}" data-id="{{ video.id }}" data-base-title="{{ video.title|escape }}">
             {% if video.id in noted_video_ids %}📝 {% endif %}{{ video.title }}
