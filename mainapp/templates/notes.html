@@ -189,16 +189,34 @@ body {
 }
 
 .like-btn {
-  border: none;
-  border-radius: 8px;
-  padding: 7px 10px;
+  border: 1px solid #334155;
+  border-radius: 999px;
+  padding: 4px 10px;
   cursor: pointer;
-  background: #334155;
-  color: #fff;
+  background: transparent;
+  color: #cbd5e1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .like-btn.active {
-  background: #ec4899;
+  border-color: #ec4899;
+  color: #ec4899;
+}
+
+.heart-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.like-count {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.like-btn.active .like-count {
+  color: #f9a8d4;
 }
 
 .liked-users {
@@ -281,7 +299,8 @@ body {
             <button type="button"
                     class="like-btn {% for like in like_users %}{% if like.user_id == user.id %}active{% endif %}{% endfor %}"
                     onclick="toggleLike(event, {{ note.id }}, this)">
-              ❤️ Like (<span class="like-count">{{ like_users|length }}</span>)
+              <span class="heart-icon">🤍</span>
+              <span class="like-count">{{ like_users|length }}</span>
             </button>
             <div class="liked-users">Liked by: <span class="liked-users-list">{% for like in like_users %}{{ like.user.username }}{% if not forloop.last %}, {% endif %}{% empty %}No likes yet{% endfor %}</span></div>
           {% endwith %}
@@ -522,6 +541,7 @@ function toggleLike(event, noteId, button) {
 
     button.classList.toggle('active', data.liked);
     button.querySelector('.like-count').innerText = data.count;
+    button.querySelector('.heart-icon').innerText = data.liked ? '💗' : '🤍';
 
     const usersText = data.users.length ? data.users.join(', ') : 'No likes yet';
     const usersContainer = button.parentElement.querySelector('.liked-users-list');
@@ -529,6 +549,11 @@ function toggleLike(event, noteId, button) {
   })
   .catch(() => showToast('Like failed', true));
 }
+
+document.querySelectorAll('.like-btn').forEach((button) => {
+  const icon = button.querySelector('.heart-icon');
+  if (icon) icon.innerText = button.classList.contains('active') ? '💗' : '🤍';
+});
 
 function getCookie(name) {
   let cookieValue = null;
