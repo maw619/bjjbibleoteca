@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from .models import Category, Note, Video, NoteComment, NoteLike
+from .models import Category, Note, Video, NoteComment, NoteLike, VideoLike
 import json
 from django.utils import timezone
 from django.db import connection
@@ -21,6 +21,14 @@ def _comments_table_available():
 def _likes_table_available():
     try:
         NoteLike.objects.exists()
+        return True
+    except (OperationalError, ProgrammingError):
+        return False
+
+
+def _video_likes_table_available():
+    try:
+        VideoLike.objects.exists()
         return True
     except (OperationalError, ProgrammingError):
         return False
@@ -153,6 +161,49 @@ def toggle_note_like(request):
         print("ERROR:", e)
         return JsonResponse({"error": "Server error"}, status=500)
 
+
+@require_POST
+@login_required
+def toggle_video_like(request):
+    try:
+        if "mainapp_videolike" not in connection.introspection.table_names():
+            return JsonResponse({"error": "Video likes table is missing. Run migrations first."}, status=503)
+
+        data = json.loads(request.body.decode("utf-8"))
+        video_id = data.get("video_id")
+        if not video_id:
+            return JsonResponse({"error": "Missing video id"}, status=400)
+
+        video = Video.objects.get(id=video_id)
+        like, created = VideoLike.objects.get_or_create(video=video, user=request.user)
+        if not created:
+            like.delete()
+            liked = False
+        else:
+            liked = True
+
+        likes = VideoLike.objects.filter(video=video)
+        return JsonResponse({
+            "status": "success",
+            "liked": liked,
+            "count": likes.count(),
+        })
+    except Video.DoesNotExist:
+        return JsonResponse({"error": "Video not found"}, status=404)
+    except Exception as e:
+        print("ERROR:", e)
+        return JsonResponse({"error": "Server error"}, status=500)
+
+
+@login_required
+def get_video_like(request, video_id):
+    if not _video_likes_table_available():
+        return JsonResponse({"liked": False, "count": 0})
+
+    likes = VideoLike.objects.filter(video_id=video_id)
+    liked = likes.filter(user=request.user).exists()
+    return JsonResponse({"liked": liked, "count": likes.count()})
+
 @login_required
 def save_note(request):
     if request.method == "POST":
@@ -244,6 +295,11 @@ def video_dropdown(request):
     noted_video_ids = set(
         Note.objects.filter(user=request.user).values_list("video_id", flat=True)
     )
+    liked_video_ids = set()
+    if _video_likes_table_available():
+        liked_video_ids = set(
+            VideoLike.objects.filter(user=request.user).values_list("video_id", flat=True)
+        )
 
     recent_notes = Note.objects.select_related("user", "video").order_by("-updated_at")[:12]
 
@@ -254,6 +310,7 @@ def video_dropdown(request):
     return render(request, 'videos.html', {
         'categories': categories,
         'noted_video_ids': noted_video_ids,
+        'liked_video_ids': liked_video_ids,
         'recent_notes': recent_notes,
         'has_comments_table': has_comments_table,
     })
