@@ -41,4 +41,18 @@ class NoteComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user} on note {self.note_id}"
+
+
+class NoteLike(models.Model):
+    note = models.ForeignKey(Note, related_name="likes", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["note", "user"], name="unique_note_like")
+        ]
+
+    def __str__(self):
+        return f"{self.user} liked note {self.note_id}"
     
