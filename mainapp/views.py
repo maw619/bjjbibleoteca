@@ -6,6 +6,7 @@ from .models import Category, Note, Video, NoteComment, NoteLike
 import json
 from django.utils import timezone
 from django.db import connection
+from django.db.models import Count
 from django.db.utils import OperationalError, ProgrammingError
 
 
