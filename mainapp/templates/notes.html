@@ -180,10 +180,35 @@ body {
   padding: 8px 12px;
   cursor: pointer;
 }
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease, bottom 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  bottom: 40px;
+}
+
+.toast.error {
+  background: #ef4444;
+}
 </style>
 </head>
 
 <body>
+<div id="toast" class="toast"></div>
 
 <div class="topbar">
   <a href="{% url 'home' %}">Videos</a>
@@ -220,32 +245,38 @@ body {
         {{ note.updated_at|timesince }} ago</h4>
       </div>
         {% if note.user == user %}
-        <button class="delete-btn" onclick="deleteNote(event, this)">
+        <button type="button" class="delete-btn" onclick="return deleteNote(event, this)">
             Delete
         </button>
         {% endif %}
 
       <div class="comments" onclick="event.stopPropagation()">
         <div class="comment-list" id="comments-{{ note.id }}">
-          {% for comment in note.comments.all %}
-            <div class="comment-item" id="comment-{{ comment.id }}">
-              <div class="comment-header">
-                <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
-                {% if comment.user == user %}
-                  <button class="comment-delete-btn" onclick="deleteComment(event, {{ comment.id }})">Delete</button>
-                {% endif %}
+          {% if has_comments_table %}
+            {% for comment in note.comments.all %}
+              <div class="comment-item" id="comment-{{ comment.id }}">
+                <div class="comment-header">
+                  <div class="comment-meta">{{ comment.user.username }} • {{ comment.created_at|timesince }} ago</div>
+                  {% if comment.user == user %}
+                    <button class="comment-delete-btn" onclick="deleteComment(event, {{ comment.id }})">Delete</button>
+                  {% endif %}
+                </div>
+                <div>{{ comment.content }}</div>
               </div>
-              <div>{{ comment.content }}</div>
-            </div>
-          {% empty %}
-            <div class="comment-meta" id="comments-empty-{{ note.id }}">No comments yet.</div>
-          {% endfor %}
+            {% empty %}
+              <div class="comment-meta" id="comments-empty-{{ note.id }}">No comments yet.</div>
+            {% endfor %}
+          {% else %}
+            <div class="comment-meta" id="comments-empty-{{ note.id }}">Comments unavailable until migrations are run.</div>
+          {% endif %}
         </div>
 
-        <form class="comment-form" onsubmit="addComment(event, {{ note.id }})">
-          <input class="comment-input" id="comment-input-{{ note.id }}" type="text" placeholder="Add a comment" required>
-          <button class="comment-btn" type="submit">Post</button>
-        </form>
+        {% if has_comments_table %}
+          <form class="comment-form" onsubmit="addComment(event, {{ note.id }})">
+            <input class="comment-input" id="comment-input-{{ note.id }}" type="text" placeholder="Add a comment" required>
+            <button class="comment-btn" type="submit">Post</button>
+          </form>
+        {% endif %}
       </div>
     </div>
     {% empty %}
@@ -358,6 +389,19 @@ function closeModal() {
   video.src = "";
 }
 
+function showToast(message, isError = false) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.innerText = message;
+  toast.classList.toggle("error", isError);
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
+
 // Close when clicking outside
 window.onclick = function(event) {
   const modal = document.getElementById("videoModal");
@@ -368,6 +412,7 @@ window.onclick = function(event) {
 
 
 function deleteNote(event, button) {
+  event.preventDefault();
   event.stopPropagation();
 
   const card = button.closest(".card");
@@ -407,6 +452,8 @@ function deleteNote(event, button) {
     console.error(err);
     showToast("Error deleting note", true);
   });
+
+  return false;
 }
 
 function getCookie(name) {
@@ -423,7 +470,6 @@ function getCookie(name) {
   return cookieValue;
 }
 
-showToast("Note deleted");
 </script>
 
 </body>
