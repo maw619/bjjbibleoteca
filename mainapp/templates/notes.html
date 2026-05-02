@@ -180,10 +180,35 @@ body {
   padding: 8px 12px;
   cursor: pointer;
 }
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease, bottom 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  bottom: 40px;
+}
+
+.toast.error {
+  background: #ef4444;
+}
 </style>
 </head>
 
 <body>
+<div id="toast" class="toast"></div>
 
 <div class="topbar">
   <a href="{% url 'home' %}">Videos</a>
@@ -362,6 +387,19 @@ function closeModal() {
   modal.style.display = "none";
   video.pause();
   video.src = "";
+}
+
+function showToast(message, isError = false) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.innerText = message;
+  toast.classList.toggle("error", isError);
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
 }
 
 // Close when clicking outside
