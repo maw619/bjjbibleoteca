@@ -313,7 +313,7 @@ button:hover {
         <option disabled selected>Select a video</option>
 
         {% for section in category.sections.all %}
-        <optgroup label="{{ section.name }}">
+        <optgroup label="{{ section.name }}{% if has_comments_table %} ({{ section.commenter_count }} commenters){% endif %}">
           {% for video in section.videos.all %}
           <option value="{{ video.url }}" data-id="{{ video.id }}" data-base-title="{{ video.title|escape }}">
             {% if video.id in noted_video_ids %}📝 {% endif %}{{ video.title }}
