@@ -281,11 +281,51 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+
+.mobile-sidebar-toggle {
+  display: none;
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 1100;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+
+@media (max-width: 900px) {
+  .notes-sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 18%;
+    z-index: 1000;
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+    transition: transform .25s ease;
+    overflow-y: auto;
+  }
+
+  .notes-sidebar.open {
+    transform: translateY(0);
+  }
+
+  .mobile-sidebar-toggle {
+    display: inline-block;
+  }
+}
+
 </style>
 </head>
 
 <body>
 <div id="toast" class="toast"></div>
+<button id="mobileSidebarToggle" class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()">Activity</button>
 <div class="topbar">
   {% if user.is_authenticated %}
     Welcome, {{ user.username }} |
@@ -340,7 +380,8 @@ button:hover {
 
   </div>
 
-  <aside class="notes-sidebar">
+  <aside class="notes-sidebar" id="notesSidebar">
+    <div style="display:flex;justify-content:flex-end;"><button onclick="closeMobileSidebar()" style="background:none;border:none;color:#e2e8f0;font-size:22px;cursor:pointer;">&times;</button></div>
     <h3 class="sidebar-title">❤️ Liked Videos</h3>
     <p class="sidebar-subtitle">Quick access to videos you hearted.</p>
     <div id="likedVideosList">
@@ -666,6 +707,25 @@ function showToast(message) {
     toast.classList.remove("show");
   }, 2500);
 }
+
+
+function toggleMobileSidebar() {
+  const sidebar = document.getElementById('notesSidebar');
+  if (!sidebar) return;
+  sidebar.classList.toggle('open');
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('notesSidebar');
+  if (!sidebar) return;
+  sidebar.classList.remove('open');
+}
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900) {
+    closeMobileSidebar();
+  }
+});
 
 function openSidebarVideoModal(noteCard) {
   const url = noteCard.dataset.url;
