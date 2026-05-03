@@ -617,6 +617,10 @@ function playPlaylistItem(item) {
     }
   }
   playVideoByData(card, videoUrl, videoId);
+  const video = card.querySelector("video");
+  if (video) {
+    video.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   card.querySelectorAll(".playlist-item.active").forEach((el) => el.classList.remove("active"));
   item.classList.add("active");
