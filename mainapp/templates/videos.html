@@ -588,7 +588,8 @@ function searchVideos(query) {
       playVideo(entry.select);
       const cardVideo = entry.select.closest(".card")?.querySelector("video");
       if (cardVideo) {
-        cardVideo.scrollIntoView({ behavior: "smooth", block: "start" });
+        const y = cardVideo.getBoundingClientRect().top + window.scrollY - 12;
+        window.scrollTo({ top: Math.max(y, 0), behavior: "smooth" });
       }
       results.style.display = "none";
     };
