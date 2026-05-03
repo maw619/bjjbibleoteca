@@ -70,7 +70,7 @@
         id = id.trim();
         if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return null;
 
-        return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`;
+        return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1`;
       } catch {
         return null;
       }
@@ -90,7 +90,9 @@
 
       const yt = youtubeEmbed(url);
       if (yt) {
-        box.innerHTML = `<iframe src="${yt}" title="Embedded video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        const src = new URL(yt);
+        src.searchParams.set("origin", window.location.origin);
+        box.innerHTML = `<iframe src="${src.toString()}" title="Embedded video" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
         return;
       }
 
@@ -101,7 +103,10 @@
 
       if (isVideo(url)) {
         box.innerHTML = `<video controls playsinline src="${url}"></video>`;
+        return;
       }
+
+      box.innerHTML = `<div class="meta">Preview unavailable. <a href="${url}" target="_blank" style="color:#93c5fd">Open link</a></div>`;
     });
   </script>
 </body>
