@@ -56,3 +56,31 @@ class NoteLike(models.Model):
     def __str__(self):
         return f"{self.user} liked note {self.note_id}"
     
+
+
+class VideoLike(models.Model):
+    video = models.ForeignKey(Video, related_name="likes", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["video", "user"], name="unique_video_like")
+        ]
+
+    def __str__(self):
+        return f"{self.user} liked video {self.video_id}"
+
+
+class PushSubscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="push_subscriptions")
+    endpoint = models.URLField(unique=True)
+    p256dh = models.TextField()
+    auth = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def as_webpush_dict(self):
+        return {
+            "endpoint": self.endpoint,
+            "keys": {"p256dh": self.p256dh, "auth": self.auth},
+        }
