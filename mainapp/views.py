@@ -381,3 +381,12 @@ def toggle_forum_upvote(request, post_id):
         post.upvotes.add(request.user)
     return redirect("forum")
 
+
+@require_POST
+@login_required
+def delete_forum_post(request, post_id):
+    post = ForumPost.objects.get(id=post_id)
+    if post.user_id == request.user.id:
+        post.delete()
+    return redirect("forum")
+
