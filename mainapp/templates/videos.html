@@ -764,7 +764,8 @@ async function requestSiteNotifications() {
 
   const publicKey = '{{ web_push_public_key|escapejs }}';
   if (!publicKey) {
-    showToast('Push key is not configured on server', true);
+    showToast('Notifications enabled on this device (background push not configured yet)');
+    updateNotificationButton();
     return;
   }
 
