@@ -486,6 +486,27 @@ button:hover {
 
       <button class="save-note-btn video-action-btn hidden" onclick="saveNote(this)">Save Notes</button>
 
+      <div class="playlist">
+        {% for section in category.sections.all %}
+        <div class="playlist-section">
+          <button class="playlist-header" onclick="togglePlaylistSection(this)">
+            {{ section.name }} ({{ section.commenter_count }} commenters)
+          </button>
+          <ul class="playlist-list" style="display:none;">
+            {% for video in section.videos.all %}
+            <li class="playlist-item"
+                data-url="{{ video.url }}"
+                data-id="{{ video.id }}"
+                data-base-title="{{ video.title|escape }}"
+                onclick="playPlaylistItem(this)">
+              {% if video.id in noted_video_ids %}📝 {% endif %}{{ video.title }}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
+
     </div>
     {% endfor %}
 
