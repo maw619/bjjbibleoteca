@@ -588,19 +588,20 @@ function searchVideos(query) {
       entry.option.selected = true;
       playVideo(entry.select);
       const card = entry.select.closest(".card");
-      if (card) scrollCardIntoViewIfNeeded(card);
+      const anchor = card?.querySelector(".category-title") || card;
+      if (anchor) scrollAnchorIntoViewIfNeeded(anchor);
       results.style.display = "none";
     };
   });
 }
 
-function scrollCardIntoViewIfNeeded(card) {
-  const rect = card.getBoundingClientRect();
+function scrollAnchorIntoViewIfNeeded(anchor) {
+  const rect = anchor.getBoundingClientRect();
   const topSafe = 80;
   const bottomSafe = window.innerHeight - 20;
   const isFullyVisible = rect.top >= topSafe && rect.bottom <= bottomSafe;
   if (isFullyVisible) return;
-  card.scrollIntoView({ behavior: "smooth", block: "start" });
+  anchor.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function playVideo(select) {
