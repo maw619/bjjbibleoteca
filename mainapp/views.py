@@ -57,6 +57,22 @@ def _video_likes_table_available():
         return False
 
 
+
+@login_required
+def push_status(request):
+    try:
+        import pywebpush  # noqa: F401
+        has_pywebpush = True
+    except Exception:
+        has_pywebpush = False
+
+    return JsonResponse({
+        "has_public_key": bool(settings.WEB_PUSH_PUBLIC_KEY),
+        "has_private_key": bool(settings.WEB_PUSH_PRIVATE_KEY),
+        "has_claims_sub": bool(settings.WEB_PUSH_CLAIMS_SUB),
+        "has_pywebpush": has_pywebpush,
+    })
+
 @login_required
 def notes_list(request):
     has_comments_table = _comments_table_available()

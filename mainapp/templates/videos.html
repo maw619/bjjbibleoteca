@@ -762,9 +762,16 @@ async function requestSiteNotifications() {
     return;
   }
 
+  const statusRes = await fetch('/push-status/');
+  const pushStatus = await statusRes.json();
+
   const publicKey = '{{ web_push_public_key|escapejs }}';
-  if (!publicKey) {
-    showToast('Notifications enabled on this device (background push not configured yet)');
+  if (!publicKey || !pushStatus.has_private_key || !pushStatus.has_pywebpush) {
+    const missing = [];
+    if (!publicKey) missing.push('public key');
+    if (!pushStatus.has_private_key) missing.push('private key');
+    if (!pushStatus.has_pywebpush) missing.push('pywebpush package');
+    showToast(`Notifications enabled locally. Missing server push setup: ${missing.join(', ')}`, true);
     updateNotificationButton();
     return;
   }
