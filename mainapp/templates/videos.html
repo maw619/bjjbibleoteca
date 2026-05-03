@@ -586,6 +586,10 @@ function searchVideos(query) {
       if (!entry) return;
       entry.option.selected = true;
       playVideo(entry.select);
+      const cardVideo = entry.select.closest(".card")?.querySelector("video");
+      if (cardVideo) {
+        cardVideo.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
       results.style.display = "none";
     };
   });
