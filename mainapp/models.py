@@ -56,3 +56,32 @@ class NoteLike(models.Model):
     def __str__(self):
         return f"{self.user} liked note {self.note_id}"
     
+
+
+class VideoLike(models.Model):
+    video = models.ForeignKey(Video, related_name="likes", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["video", "user"], name="unique_video_like")
+        ]
+
+    def __str__(self):
+        return f"{self.user} liked video {self.video_id}"
+
+
+class ForumPost(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    url = models.URLField()
+    description = models.TextField(blank=True)
+    upvotes = models.ManyToManyField(User, related_name="upvoted_forum_posts", blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
