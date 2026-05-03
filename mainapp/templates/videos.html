@@ -364,6 +364,7 @@ button:hover {
   {% if user.is_authenticated %}
     Welcome, {{ user.username }} |
     <a href="{% url 'notes' %}" style="color:#60a5fa; margin-right:10px;">Notes</a>
+    <a href="{% url 'forum' %}" style="color:#60a5fa; margin-right:10px;">Forum</a>
     <a href="{% url 'logout' %}" style="color:#60a5fa;">Logout</a>
   {% else %}
     <a href="{% url 'login' %}" style="color:#60a5fa;">Login</a> |
@@ -546,7 +547,8 @@ function saveNote(button) {
     textarea.value = "";
     loadNotes(card, videoId);
     loadVideoLike(card, videoId);
-    prependNoteActivity(selected?.dataset.baseTitle || selected?.textContent?.trim() || "Video", selected?.value || "", content, timestamp);
+    const selectedTitle = selected?.dataset.baseTitle || selected?.textContent?.trim() || "Video";
+    prependNoteActivity(selectedTitle, selected?.value || "", content, timestamp);
   })
   .catch(() => {
     showToast("Error saving note", true);
@@ -659,7 +661,8 @@ function toggleVideoLike(button) {
 
     const select = card.querySelector('select');
     const selected = select?.options[select.selectedIndex];
-    upsertLikedVideo(videoId, selected?.dataset.baseTitle || selected?.textContent?.trim() || 'Video', selected?.value || '', selected?.parentElement?.label || '', data.liked);
+    const selectedTitle = selected?.dataset.baseTitle || selected?.textContent?.trim() || 'Video';
+    upsertLikedVideo(videoId, selectedTitle, selected?.value || '', selected?.parentElement?.label || '', data.liked);
   })
   .catch(() => showToast('Error updating like', true));
 }
@@ -742,6 +745,8 @@ function formatTime(seconds) {
 
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
+
+
 
 function showToast(message) {
   const toast = document.getElementById("toast");

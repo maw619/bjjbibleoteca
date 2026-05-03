@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from .models import Category, Note, Video, NoteComment, NoteLike, VideoLike
+from .models import Category, Note, Video, NoteComment, NoteLike, VideoLike, ForumPost
 import json
 from django.utils import timezone
 from django.db import connection
@@ -126,6 +126,7 @@ def delete_note_comment(request):
     except Exception as e:
         print("ERROR:", e)
         return JsonResponse({"error": "Server error"}, status=500)
+
 
 
 @require_POST
@@ -350,3 +351,33 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("login")
+
+
+@login_required
+def forum_page(request):
+    posts = ForumPost.objects.select_related("user").prefetch_related("upvotes")
+    return render(request, "forum.html", {"posts": posts})
+
+
+@require_POST
+@login_required
+def add_forum_post(request):
+    title = (request.POST.get("title") or "").strip()
+    url = (request.POST.get("url") or "").strip()
+    description = (request.POST.get("description") or "").strip()
+
+    if title and url:
+        ForumPost.objects.create(user=request.user, title=title, url=url, description=description)
+    return redirect("forum")
+
+
+@require_POST
+@login_required
+def toggle_forum_upvote(request, post_id):
+    post = ForumPost.objects.get(id=post_id)
+    if post.upvotes.filter(id=request.user.id).exists():
+        post.upvotes.remove(request.user)
+    else:
+        post.upvotes.add(request.user)
+    return redirect("forum")
+
