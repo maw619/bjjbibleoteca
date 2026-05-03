@@ -62,6 +62,61 @@ select {
   margin-bottom: 10px;
 }
 
+.playlist {
+  margin-bottom: 12px;
+}
+
+.playlist-section {
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.playlist-header {
+  width: 100%;
+  margin-top: 0;
+  border-radius: 0;
+  text-align: left;
+  background: #0f172a;
+  padding: 10px 12px;
+}
+
+.playlist-header:hover {
+  background: #1e293b;
+}
+
+.playlist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  border-top: 1px solid #1e293b;
+}
+
+.playlist-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid #1e293b;
+  cursor: pointer;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.playlist-item:last-child {
+  border-bottom: none;
+}
+
+.playlist-item:hover {
+  background: #1e293b;
+}
+
+.playlist-item.active {
+  background: rgba(59,130,246,.2);
+  color: #93c5fd;
+  font-weight: 600;
+}
+
 /* Video */
 video {
   width: 100%;
@@ -325,6 +380,44 @@ button:hover {
   box-shadow: 0 8px 18px rgba(0,0,0,.35);
 }
 
+.video-search-wrap {
+  max-width: 900px;
+  margin: 0 auto 14px;
+  padding: 0 14px;
+}
+
+.video-search-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  box-sizing: border-box;
+}
+
+.video-search-results {
+  margin-top: 8px;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #020617;
+}
+
+.video-search-result {
+  padding: 10px 12px;
+  border-bottom: 1px solid #1e293b;
+  cursor: pointer;
+}
+
+.video-search-result:last-child {
+  border-bottom: none;
+}
+
+.video-search-result:hover {
+  background: #1e293b;
+}
+
 @media (max-width: 900px) {
   .notes-sidebar {
     position: fixed;
@@ -372,6 +465,11 @@ button:hover {
   {% endif %}
 </div>
 
+<div class="video-search-wrap">
+  <input id="videoSearchInput" class="video-search-input" type="text" placeholder="Search any video title..." oninput="searchVideos(this.value)">
+  <div id="videoSearchResults" class="video-search-results" style="display:none;"></div>
+</div>
+
 <div class="container">
   <div class="layout">
   <div class="wrapper">
@@ -382,8 +480,8 @@ button:hover {
         {{ category.name }}
       </div>
 
-      <!-- DROPDOWN -->
-      <select onchange="playVideo(this)">
+      <!-- DROPDOWN (fallback) -->
+      <select onchange="playVideo(this)" style="display:none;">
         <option disabled selected>Select a video</option>
 
         {% for section in category.sections.all %}
@@ -409,6 +507,27 @@ button:hover {
       <div class="saved-notes"></div>
 
       <button class="save-note-btn video-action-btn hidden" onclick="saveNote(this)">Save Notes</button>
+
+      <div class="playlist">
+        {% for section in category.sections.all %}
+        <div class="playlist-section">
+          <button class="playlist-header" onclick="togglePlaylistSection(this)">
+            {{ section.name }} ({{ section.commenter_count }} commenters)
+          </button>
+          <ul class="playlist-list" style="display:none;">
+            {% for video in section.videos.all %}
+            <li class="playlist-item"
+                data-url="{{ video.url }}"
+                data-id="{{ video.id }}"
+                data-base-title="{{ video.title|escape }}"
+                onclick="playPlaylistItem(this)">
+              {% if video.id in noted_video_ids %}📝 {% endif %}{{ video.title }}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
 
     </div>
     {% endfor %}
@@ -477,6 +596,59 @@ button:hover {
 </div>
 
 <script>
+let allVideoIndex = [];
+
+function initVideoSearchIndex() {
+  allVideoIndex = [];
+  document.querySelectorAll(".card").forEach((card) => {
+    const category = card.querySelector(".category-title")?.innerText?.trim() || "Category";
+    card.querySelectorAll(".playlist-item").forEach((item) => {
+      allVideoIndex.push({
+        title: item.textContent.trim().replace(/^📝\s*/, ""),
+        category,
+        item
+      });
+    });
+  });
+}
+
+function searchVideos(query) {
+  const results = document.getElementById("videoSearchResults");
+  if (!results) return;
+  const normalized = (query || "").trim().toLowerCase();
+  if (!normalized) {
+    results.style.display = "none";
+    results.innerHTML = "";
+    return;
+  }
+
+  const matches = allVideoIndex
+    .filter((entry) => entry.title.toLowerCase().includes(normalized))
+    .slice(0, 12);
+
+  if (!matches.length) {
+    results.innerHTML = '<div class="video-search-result">No videos found.</div>';
+    results.style.display = "block";
+    return;
+  }
+
+  results.innerHTML = matches.map((entry, idx) =>
+    `<div class="video-search-result" data-result-index="${idx}"><strong>${entry.title}</strong><br><small style="color:#94a3b8;">${entry.category}</small></div>`
+  ).join("");
+  results.style.display = "block";
+
+  results.querySelectorAll(".video-search-result").forEach((node) => {
+    node.onclick = () => {
+      const entry = matches[Number(node.getAttribute("data-result-index"))];
+      if (!entry) return;
+      const list = entry.item.closest(".playlist-list");
+      if (list) list.style.display = "block";
+      playPlaylistItem(entry.item);
+      results.style.display = "none";
+    };
+  });
+}
+
 function playVideo(select) {
   const selected = select.options[select.selectedIndex];
 
@@ -496,6 +668,47 @@ function playVideo(select) {
   loadVideoLike(card, videoId);
   setVideoActionVisibility(card, true);
 }
+
+function playVideoByData(card, videoUrl, videoId) {
+  const video = card.querySelector("video");
+  video.src = videoUrl;
+  video.play();
+  card.dataset.videoId = videoId;
+  loadNotes(card, videoId);
+  loadVideoLike(card, videoId);
+  setVideoActionVisibility(card, true);
+}
+
+function playPlaylistItem(item) {
+  const card = item.closest(".card");
+  const videoUrl = item.getAttribute("data-url");
+  const videoId = item.getAttribute("data-id");
+  const select = card.querySelector("select");
+  if (select) {
+    const matchingOption = Array.from(select.options).find((opt) => opt.getAttribute("data-id") === videoId);
+    if (matchingOption) {
+      select.value = matchingOption.value;
+      matchingOption.selected = true;
+    }
+  }
+  playVideoByData(card, videoUrl, videoId);
+  const video = card.querySelector("video");
+  if (video) {
+    video.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  card.querySelectorAll(".playlist-item.active").forEach((el) => el.classList.remove("active"));
+  item.classList.add("active");
+}
+
+function togglePlaylistSection(button) {
+  const list = button.nextElementSibling;
+  if (!list) return;
+  const isOpen = list.style.display === "block";
+  list.style.display = isOpen ? "none" : "block";
+}
+
+document.addEventListener("DOMContentLoaded", initVideoSearchIndex);
 
 
 function setVideoActionVisibility(card, visible) {
