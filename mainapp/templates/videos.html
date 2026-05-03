@@ -763,6 +763,9 @@ async function requestSiteNotifications() {
   }
 
   const statusRes = await fetch('/push-status/');
+  if (!statusRes.ok) {
+    throw new Error(`Push status check failed (${statusRes.status})`);
+  }
   const pushStatus = await statusRes.json();
 
   const publicKey = '{{ web_push_public_key|escapejs }}';
@@ -779,7 +782,7 @@ async function requestSiteNotifications() {
       applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
 
-    await fetch('/save-push-subscription/', {
+    const saveRes = await fetch('/save-push-subscription/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -787,6 +790,11 @@ async function requestSiteNotifications() {
       },
       body: JSON.stringify(sub),
     });
+
+    if (!saveRes.ok) {
+      const errData = await saveRes.json().catch(() => ({}));
+      throw new Error(errData.error || `Subscription save failed (${saveRes.status})`);
+    }
 
     if (!pushStatus.has_private_key || !pushStatus.has_pywebpush) {
       const missing = [];
@@ -798,7 +806,8 @@ async function requestSiteNotifications() {
     }
     updateNotificationButton();
   } catch (e) {
-    showToast('Could not enable push notifications', true);
+    const reason = e?.message || e?.name || 'Unknown error';
+    showToast(`Could not enable push notifications: ${reason}`, true);
   }
 }
 
