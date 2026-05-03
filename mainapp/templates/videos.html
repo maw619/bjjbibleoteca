@@ -42,6 +42,7 @@ body {
   padding: 15px;
   margin-bottom: 20px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  scroll-margin-top: 12px;
 }
 
 /* Title */
@@ -587,13 +588,19 @@ function searchVideos(query) {
       entry.option.selected = true;
       playVideo(entry.select);
       const card = entry.select.closest(".card");
-      if (card) {
-        const y = card.getBoundingClientRect().top + window.scrollY - 8;
-        window.scrollTo({ top: Math.max(y, 0), behavior: "smooth" });
-      }
+      if (card) scrollCardIntoViewIfNeeded(card);
       results.style.display = "none";
     };
   });
+}
+
+function scrollCardIntoViewIfNeeded(card) {
+  const rect = card.getBoundingClientRect();
+  const topSafe = 80;
+  const bottomSafe = window.innerHeight - 20;
+  const isFullyVisible = rect.top >= topSafe && rect.bottom <= bottomSafe;
+  if (isFullyVisible) return;
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function playVideo(select) {
