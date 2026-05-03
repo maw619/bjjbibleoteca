@@ -344,6 +344,11 @@ button:hover {
   font-weight: 600;
 }
 
+.video-search-input-row {
+  display: flex;
+  gap: 8px;
+}
+
 .video-search-input {
   width: 100%;
   padding: 12px;
@@ -352,6 +357,21 @@ button:hover {
   background: #0f172a;
   color: #e2e8f0;
   box-sizing: border-box;
+}
+
+.video-search-clear-btn {
+  width: auto;
+  margin-top: 0;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.video-search-clear-btn:hover {
+  background: #334155;
 }
 
 .video-search-results {
@@ -425,7 +445,10 @@ button:hover {
 
 <div class="video-search-wrap">
   <label class="video-search-label" for="videoSearchInput">Search videos</label>
-  <input id="videoSearchInput" class="video-search-input" type="text" placeholder="Search any video..." oninput="searchVideos(this.value)">
+  <div class="video-search-input-row">
+    <input id="videoSearchInput" class="video-search-input" type="text" placeholder="Search any video..." oninput="searchVideos(this.value)">
+    <button type="button" class="video-search-clear-btn" onclick="clearVideoSearch()">Clear</button>
+  </div>
   <div id="videoSearchResults" class="video-search-results" style="display:none;"></div>
 </div>
 
@@ -616,6 +639,18 @@ if (card) scrollToVideoPlayer(card);
       results.style.display = "none";
     };
   });
+}
+
+
+function clearVideoSearch() {
+  const input = document.getElementById("videoSearchInput");
+  const results = document.getElementById("videoSearchResults");
+  if (input) input.value = "";
+  if (results) {
+    results.innerHTML = "";
+    results.style.display = "none";
+  }
+  if (input) input.focus();
 }
 
 function scrollToVideoPlayer(card) {
