@@ -612,20 +612,25 @@ function searchVideos(query) {
       entry.option.selected = true;
       playVideo(entry.select);
       const card = entry.select.closest(".card");
-      const anchor = card?.querySelector(".category-title") || card;
-      if (anchor) scrollAnchorIntoViewIfNeeded(anchor);
+      if (card) scrollToVideoPlayer(card);
       results.style.display = "none";
     };
   });
 }
 
-function scrollAnchorIntoViewIfNeeded(anchor) {
-  const rect = anchor.getBoundingClientRect();
-  const topSafe = 80;
-  const bottomSafe = window.innerHeight - 20;
-  const isFullyVisible = rect.top >= topSafe && rect.bottom <= bottomSafe;
-  if (isFullyVisible) return;
-  anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+function scrollToVideoPlayer(card) {
+  const video = card.querySelector("video");
+  if (!video) return;
+
+  setTimeout(() => {
+    const offset = 90;
+    const videoTop = video.getBoundingClientRect().top + window.scrollY;
+
+    window.scrollTo({
+      top: videoTop - offset,
+      behavior: "smooth"
+    });
+  }, 150);
 }
 
 function playVideo(select) {
