@@ -45,17 +45,32 @@
   {% endfor %}
 
   <script>
-    function youtubeEmbed(url) {
-      const patterns = [
-        /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
-        /(?:youtu\.be\/)([\w-]{11})/,
-        /(?:youtube\.com\/shorts\/)([\w-]{11})/
-      ];
-      for (const p of patterns) {
-        const m = url.match(p);
-        if (m) return `https://www.youtube.com/embed/${m[1]}`;
+    function youtubeEmbed(rawUrl) {
+      try {
+        const parsed = new URL(rawUrl);
+        const host = parsed.hostname.replace(/^www\./, '').replace(/^m\./, '');
+        let id = null;
+
+        if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+          id = parsed.searchParams.get('v');
+          if (!id && parsed.pathname.startsWith('/shorts/')) {
+            id = parsed.pathname.split('/')[2];
+          }
+          if (!id && parsed.pathname.startsWith('/embed/')) {
+            id = parsed.pathname.split('/')[2];
+          }
+        } else if (host === 'youtu.be') {
+          id = parsed.pathname.replace('/', '').split('/')[0];
+        }
+
+        if (!id) return null;
+        id = id.trim();
+        if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return null;
+
+        return `https://www.youtube-nocookie.com/embed/${id}?rel=0`;
+      } catch {
+        return null;
       }
-      return null;
     }
 
     function isImage(url) {
