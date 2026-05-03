@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Forum</title>
+  <style>
+    body { font-family: Arial; background:#0f172a; color:#e2e8f0; margin:0; padding:16px; }
+    .card { background:#1e293b; padding:14px; border-radius:10px; margin-bottom:12px; }
+    .top a { color:#60a5fa; margin-right:12px; }
+    input, textarea { width:100%; padding:8px; margin:6px 0; border-radius:8px; border:1px solid #334155; background:#0b1220; color:#e2e8f0; }
+    button { padding:8px 12px; border:none; border-radius:8px; background:#2563eb; color:white; cursor:pointer; }
+    .meta { color:#94a3b8; font-size:12px; margin-top:4px; }
+    .preview { margin-top:10px; }
+    .preview video, .preview img, .preview iframe { width:100%; max-height:360px; border-radius:8px; border:1px solid #334155; }
+  </style>
+</head>
+<body>
+  <div class="top"><a href="/">Videos</a><a href="/notes/">Notes</a><a href="/logout/">Logout</a></div>
+  <h2>Community Video Links</h2>
+
+  <div class="card">
+    <form method="post" action="/forum/add/">{% csrf_token %}
+      <input name="title" placeholder="Post title" required>
+      <input name="url" placeholder="Video or image URL" required>
+      <textarea name="description" placeholder="Why this is useful"></textarea>
+      <button type="submit">Post Link</button>
+    </form>
+  </div>
+
+  {% for post in posts %}
+  <div class="card">
+    <a href="{{ post.url }}" target="_blank" style="color:#93c5fd;font-weight:bold">{{ post.title }}</a>
+    <div class="meta">posted by {{ post.user.username }} • {{ post.created_at|timesince }} ago</div>
+    {% if post.description %}<p>{{ post.description }}</p>{% endif %}
+
+    <div class="preview" data-url="{{ post.url|escape }}"></div>
+
+    <form method="post" action="/forum/upvote/{{ post.id }}/">{% csrf_token %}
+      <button type="submit">⬆ Upvote ({{ post.upvotes.count }})</button>
+    </form>
+  </div>
+  {% empty %}
+  <p>No posts yet.</p>
+  {% endfor %}
+
+  <script>
+    function youtubeEmbed(rawUrl) {
+      try {
+        const parsed = new URL(rawUrl);
+        const host = parsed.hostname.replace(/^www\./, '').replace(/^m\./, '');
+        let id = null;
+
+        if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+          id = parsed.searchParams.get('v');
+          if (!id && parsed.pathname.startsWith('/shorts/')) {
+            id = parsed.pathname.split('/')[2];
+          }
+          if (!id && parsed.pathname.startsWith('/embed/')) {
+            id = parsed.pathname.split('/')[2];
+          }
+          if (!id && parsed.pathname.startsWith('/live/')) {
+            id = parsed.pathname.split('/')[2];
+          }
+        } else if (host === 'youtu.be') {
+          id = parsed.pathname.replace('/', '').split('/')[0];
+        }
+
+        if (!id) return null;
+        id = id.trim();
+        if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return null;
+
+        return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1`;
+      } catch {
+        return null;
+      }
+    }
+
+    function isImage(url) {
+      return /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+    }
+
+    function isVideo(url) {
+      return /\.(mp4|webm|ogg|mov|m3u8)(\?.*)?$/i.test(url);
+    }
+
+    document.querySelectorAll('.preview').forEach((box) => {
+      const url = box.dataset.url;
+      if (!url) return;
+
+      const yt = youtubeEmbed(url);
+      if (yt) {
+        const src = new URL(yt);
+        src.searchParams.set("origin", window.location.origin);
+        box.innerHTML = `<iframe src="${src.toString()}" title="Embedded video" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        return;
+      }
+
+      if (isImage(url)) {
+        box.innerHTML = `<img src="${url}" alt="Link preview image" loading="lazy">`;
+        return;
+      }
+
+      if (isVideo(url)) {
+        box.innerHTML = `<video controls playsinline src="${url}"></video>`;
+        return;
+      }
+
+      box.innerHTML = `<div class="meta">Preview unavailable. <a href="${url}" target="_blank" style="color:#93c5fd">Open link</a></div>`;
+    });
+  </script>
+</body>
+</html>
