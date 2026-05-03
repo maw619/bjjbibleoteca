@@ -768,10 +768,16 @@ async function requestSiteNotifications() {
   }
   const pushStatus = await statusRes.json();
 
-  const publicKey = '{{ web_push_public_key|escapejs }}';
+  const publicKey = ('{{ web_push_public_key|escapejs }}' || '').trim();
   if (!publicKey) {
     showToast('Missing server push setup: public key', true);
     updateNotificationButton();
+    return;
+  }
+
+  const keyCheck = validateVapidPublicKey(publicKey);
+  if (!keyCheck.valid) {
+    showToast(`Invalid application server key: ${keyCheck.reason}`, true);
     return;
   }
 
@@ -811,6 +817,20 @@ async function requestSiteNotifications() {
   }
 }
 
+
+function validateVapidPublicKey(key) {
+  if (!key) return { valid: false, reason: "missing public key" };
+  if (key.includes("BEGIN PUBLIC KEY")) return { valid: false, reason: "use VAPID base64url key, not PEM" };
+  try {
+    const bytes = urlBase64ToUint8Array(key);
+    if (bytes.length !== 65) {
+      return { valid: false, reason: `expected 65-byte key, got ${bytes.length}` };
+    }
+    return { valid: true };
+  } catch (e) {
+    return { valid: false, reason: "malformed base64url" };
+  }
+}
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
