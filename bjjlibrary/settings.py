@@ -135,3 +135,6 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
+WEB_PUSH_PUBLIC_KEY = os.getenv("WEB_PUSH_PUBLIC_KEY", "")
+WEB_PUSH_PRIVATE_KEY = os.getenv("WEB_PUSH_PRIVATE_KEY", "")
+WEB_PUSH_CLAIMS_SUB = os.getenv("WEB_PUSH_CLAIMS_SUB", "mailto:admin@bjjbiblioteca.com")

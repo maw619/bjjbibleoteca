@@ -115,6 +115,31 @@ video {
   background: #dc2626;
 }
 
+.video-action-btn.hidden {
+  display: none;
+}
+
+.video-like-btn {
+  width: auto;
+  margin-top: 8px;
+  margin-left: auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.video-like-btn:hover {
+  background: rgba(148, 163, 184, 0.28);
+}
+
+.video-like-btn .video-like-count {
+  opacity: 0.9;
+}
+
 /* Button */
 button {
   width: 100%;
@@ -281,15 +306,65 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+
+.mobile-sidebar-toggle {
+  display: none;
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 1100;
+  width: auto;
+  margin-top: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  line-height: 1;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+
+@media (max-width: 900px) {
+  .notes-sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 18%;
+    z-index: 1000;
+    border-radius: 16px 16px 0 0;
+    transform: translateY(calc(100% + 20px));
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: transform .25s ease, opacity .2s ease;
+    overflow-y: auto;
+  }
+
+  .notes-sidebar.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .mobile-sidebar-toggle {
+    display: inline-block;
+  }
+}
+
 </style>
 </head>
 
 <body>
 <div id="toast" class="toast"></div>
+<button id="mobileSidebarToggle" class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()">Activity</button>
 <div class="topbar">
   {% if user.is_authenticated %}
     Welcome, {{ user.username }} |
     <a href="{% url 'notes' %}" style="color:#60a5fa; margin-right:10px;">Notes</a>
+    <button id="enableNotificationsBtn" onclick="requestSiteNotifications()" style="width:auto;margin:0 10px 0 0;padding:6px 10px;background:#1e293b;border:1px solid #334155;border-radius:8px;font-size:12px;">Enable Notifications</button>
     <a href="{% url 'logout' %}" style="color:#60a5fa;">Logout</a>
   {% else %}
     <a href="{% url 'login' %}" style="color:#60a5fa;">Login</a> |
@@ -324,6 +399,7 @@ button:hover {
 
       <!-- VIDEO -->
       <video controls playsinline></video>
+      <button class="video-like-btn video-action-btn hidden" onclick="toggleVideoLike(this)" data-liked="false">🤍 Like <span class="video-like-count">0</span></button>
 
       <!-- NOTES -->
       <div class="note-container">
@@ -332,16 +408,35 @@ button:hover {
 </div>
       <div class="saved-notes"></div>
 
-      <button onclick="saveNote(this)">Save Notes</button>
+      <button class="save-note-btn video-action-btn hidden" onclick="saveNote(this)">Save Notes</button>
 
     </div>
     {% endfor %}
 
   </div>
 
-  <aside class="notes-sidebar">
-    <h3 class="sidebar-title">Notes Activity</h3>
+  <aside class="notes-sidebar" id="notesSidebar">
+    <div style="display:flex;justify-content:flex-end;"><button onclick="closeMobileSidebar()" style="background:none;border:none;color:#e2e8f0;font-size:22px;cursor:pointer;">&times;</button></div>
+    <h3 class="sidebar-title">❤️ Liked Videos</h3>
+    <p class="sidebar-subtitle">Quick access to videos you hearted.</p>
+    <div id="likedVideosList">
+    {% for video in liked_videos %}
+      <div class="sidebar-note"
+           data-url="{{ video.url }}"
+           data-timestamp="0"
+           data-title="{{ video.title|escapejs }}"
+           onclick="openSidebarVideoModal(this)">
+        <div class="sidebar-note-meta">{{ video.section.name }}</div>
+        <div class="sidebar-note-content">{{ video.title }}</div>
+      </div>
+    {% empty %}
+      <p style="color:#94a3b8;">No liked videos yet.</p>
+    {% endfor %}
+    </div>
+
+    <h3 class="sidebar-title" style="margin-top:18px;">Notes Activity</h3>
     <p class="sidebar-subtitle">Latest notes and comments from the notes page.</p>
+    <div id="notesActivityList">
     {% for note in recent_notes %}
       <div class="sidebar-note"
            data-url="{{ note.video.url }}"
@@ -367,6 +462,7 @@ button:hover {
     {% empty %}
       <p style="color:#94a3b8;">No notes yet.</p>
     {% endfor %}
+    </div>
     <a href="{% url 'notes' %}" style="color:#60a5fa;">Open full notes page →</a>
   </aside>
 </div>
@@ -397,6 +493,18 @@ function playVideo(select) {
   card.dataset.videoId = videoId;
 
   loadNotes(card, videoId);
+  loadVideoLike(card, videoId);
+  setVideoActionVisibility(card, true);
+}
+
+
+function setVideoActionVisibility(card, visible) {
+  const likeBtn = card.querySelector('.video-like-btn');
+  const saveBtn = card.querySelector('.save-note-btn');
+  [likeBtn, saveBtn].forEach((btn) => {
+    if (!btn) return;
+    btn.classList.toggle('hidden', !visible);
+  });
 }
 
 function saveNote(button) {
@@ -410,6 +518,7 @@ function saveNote(button) {
   const videoId = selected?.getAttribute("data-id");
 
   if (!videoId) {
+    setVideoActionVisibility(card, false);
     showToast("Please select a video first", true);
     return;
   }
@@ -437,6 +546,10 @@ function saveNote(button) {
     showToast(`Saved at ${formattedTime} — ${videoTitle}`);
     textarea.value = "";
     loadNotes(card, videoId);
+    loadVideoLike(card, videoId);
+    const selectedTitle = selected?.dataset.baseTitle || selected?.textContent?.trim() || "Video";
+    prependNoteActivity(selectedTitle, selected?.value || "", content, timestamp);
+    sendSiteNotification("Note saved", `${selectedTitle} at ${formattedTime}`);
   })
   .catch(() => {
     showToast("Error saving note", true);
@@ -511,6 +624,101 @@ function deleteNoteFromCard(event, noteId, button) {
   });
 }
 
+
+function loadVideoLike(card, videoId) {
+  fetch(`/get-video-like/${videoId}/`)
+    .then(res => res.json())
+    .then(data => {
+      const button = card.querySelector('.video-like-btn');
+      button.dataset.liked = data.liked ? 'true' : 'false';
+      button.innerHTML = `${data.liked ? '💗' : '🤍'} Like <span class="video-like-count">${data.count}</span>`;
+    });
+}
+
+function toggleVideoLike(button) {
+  const card = button.closest('.card');
+  const videoId = card.dataset.videoId;
+  if (!videoId) {
+    showToast('Please select a video first', true);
+    return;
+  }
+
+  fetch('/toggle-video-like/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ video_id: videoId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status !== 'success') {
+      showToast(data.error || 'Could not update like', true);
+      return;
+    }
+    button.dataset.liked = data.liked ? 'true' : 'false';
+    button.innerHTML = `${data.liked ? '💗' : '🤍'} Like <span class="video-like-count">${data.count}</span>`;
+
+    const select = card.querySelector('select');
+    const selected = select?.options[select.selectedIndex];
+    const selectedTitle = selected?.dataset.baseTitle || selected?.textContent?.trim() || 'Video';
+    upsertLikedVideo(videoId, selectedTitle, selected?.value || '', selected?.parentElement?.label || '', data.liked);
+    sendSiteNotification(data.liked ? 'Video liked' : 'Video unliked', selectedTitle);
+  })
+  .catch(() => showToast('Error updating like', true));
+}
+
+
+function prependNoteActivity(videoTitle, videoUrl, content, timestamp) {
+  const list = document.getElementById('notesActivityList');
+  if (!list) return;
+
+  const item = document.createElement('div');
+  item.className = 'sidebar-note';
+  item.dataset.url = videoUrl;
+  item.dataset.timestamp = String(timestamp || 0);
+  item.dataset.title = videoTitle;
+  item.setAttribute('onclick', 'openSidebarVideoModal(this)');
+  item.innerHTML = `
+    <div class="sidebar-note-meta">${escapeHtml('You')} • ${escapeHtml(videoTitle)} • just now</div>
+    <div class="sidebar-note-content">${escapeHtml(content)}</div>
+  `;
+
+  list.prepend(item);
+  while (list.children.length > 12) {
+    list.removeChild(list.lastElementChild);
+  }
+}
+
+function upsertLikedVideo(videoId, videoTitle, videoUrl, sectionName, liked) {
+  const list = document.getElementById('likedVideosList');
+  if (!list) return;
+
+  const existing = list.querySelector(`[data-video-id="${videoId}"]`);
+  if (!liked) {
+    if (existing) existing.remove();
+    return;
+  }
+
+  const item = existing || document.createElement('div');
+  item.className = 'sidebar-note';
+  item.dataset.videoId = String(videoId);
+  item.dataset.url = videoUrl;
+  item.dataset.timestamp = '0';
+  item.dataset.title = videoTitle;
+  item.setAttribute('onclick', 'openSidebarVideoModal(this)');
+  item.innerHTML = `
+    <div class="sidebar-note-meta">${escapeHtml(sectionName || '')}</div>
+    <div class="sidebar-note-content">${escapeHtml(videoTitle)}</div>
+  `;
+
+  list.prepend(item);
+  while (list.children.length > 12) {
+    list.removeChild(list.lastElementChild);
+  }
+}
+
 function escapeHtml(text) {
   const div = document.createElement("div");
   div.innerText = text;
@@ -540,6 +748,73 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+
+async function requestSiteNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    showToast('Push notifications are not supported on this browser', true);
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    showToast('Notification permission was not granted', true);
+    updateNotificationButton();
+    return;
+  }
+
+  const statusRes = await fetch('/push-status/');
+  const pushStatus = await statusRes.json();
+
+  const publicKey = '{{ web_push_public_key|escapejs }}';
+  if (!publicKey || !pushStatus.has_private_key || !pushStatus.has_pywebpush) {
+    const missing = [];
+    if (!publicKey) missing.push('public key');
+    if (!pushStatus.has_private_key) missing.push('private key');
+    if (!pushStatus.has_pywebpush) missing.push('pywebpush package');
+    showToast(`Notifications enabled locally. Missing server push setup: ${missing.join(', ')}`, true);
+    updateNotificationButton();
+    return;
+  }
+
+  try {
+    const reg = await navigator.serviceWorker.register('{% static "sw.js" %}');
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
+    });
+
+    await fetch('/save-push-subscription/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify(sub),
+    });
+
+    showToast('Push notifications enabled');
+    updateNotificationButton();
+  } catch (e) {
+    showToast('Could not enable push notifications', true);
+  }
+}
+
+function sendSiteNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, { body });
+  } catch (e) {
+    console.log('Notification error', e);
+  }
+}
+
+function updateNotificationButton() {
+  const btn = document.getElementById('enableNotificationsBtn');
+  if (!btn) return;
+  const enabled = ('Notification' in window) && Notification.permission === 'granted';
+  btn.innerText = enabled ? 'Notifications On' : 'Enable Notifications';
+}
+
 function showToast(message) {
   const toast = document.getElementById("toast");
 
@@ -550,6 +825,31 @@ function showToast(message) {
     toast.classList.remove("show");
   }, 2500);
 }
+
+
+function toggleMobileSidebar() {
+  const sidebar = document.getElementById('notesSidebar');
+  if (!sidebar) return;
+  sidebar.classList.toggle('open');
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('notesSidebar');
+  if (!sidebar) return;
+  sidebar.classList.remove('open');
+}
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900) {
+    closeMobileSidebar();
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  closeMobileSidebar();
+  document.querySelectorAll('.card').forEach((card) => setVideoActionVisibility(card, false));
+  updateNotificationButton();
+});
 
 function openSidebarVideoModal(noteCard) {
   const url = noteCard.dataset.url;
