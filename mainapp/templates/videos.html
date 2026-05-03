@@ -380,6 +380,44 @@ button:hover {
   box-shadow: 0 8px 18px rgba(0,0,0,.35);
 }
 
+.video-search-wrap {
+  max-width: 900px;
+  margin: 0 auto 14px;
+  padding: 0 14px;
+}
+
+.video-search-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  box-sizing: border-box;
+}
+
+.video-search-results {
+  margin-top: 8px;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #020617;
+}
+
+.video-search-result {
+  padding: 10px 12px;
+  border-bottom: 1px solid #1e293b;
+  cursor: pointer;
+}
+
+.video-search-result:last-child {
+  border-bottom: none;
+}
+
+.video-search-result:hover {
+  background: #1e293b;
+}
+
 @media (max-width: 900px) {
   .notes-sidebar {
     position: fixed;
@@ -425,6 +463,11 @@ button:hover {
     <a href="{% url 'login' %}" style="color:#60a5fa;">Login</a> |
     <a href="{% url 'register' %}" style="color:#60a5fa;">Register</a>
   {% endif %}
+</div>
+
+<div class="video-search-wrap">
+  <input id="videoSearchInput" class="video-search-input" type="text" placeholder="Search any video title..." oninput="searchVideos(this.value)">
+  <div id="videoSearchResults" class="video-search-results" style="display:none;"></div>
 </div>
 
 <div class="container">
@@ -574,6 +617,59 @@ button:hover {
 </div>
 
 <script>
+let allVideoIndex = [];
+
+function initVideoSearchIndex() {
+  allVideoIndex = [];
+  document.querySelectorAll(".card").forEach((card) => {
+    const category = card.querySelector(".category-title")?.innerText?.trim() || "Category";
+    card.querySelectorAll(".playlist-item").forEach((item) => {
+      allVideoIndex.push({
+        title: item.textContent.trim().replace(/^📝\s*/, ""),
+        category,
+        item
+      });
+    });
+  });
+}
+
+function searchVideos(query) {
+  const results = document.getElementById("videoSearchResults");
+  if (!results) return;
+  const normalized = (query || "").trim().toLowerCase();
+  if (!normalized) {
+    results.style.display = "none";
+    results.innerHTML = "";
+    return;
+  }
+
+  const matches = allVideoIndex
+    .filter((entry) => entry.title.toLowerCase().includes(normalized))
+    .slice(0, 12);
+
+  if (!matches.length) {
+    results.innerHTML = '<div class="video-search-result">No videos found.</div>';
+    results.style.display = "block";
+    return;
+  }
+
+  results.innerHTML = matches.map((entry, idx) =>
+    `<div class="video-search-result" data-result-index="${idx}"><strong>${entry.title}</strong><br><small style="color:#94a3b8;">${entry.category}</small></div>`
+  ).join("");
+  results.style.display = "block";
+
+  results.querySelectorAll(".video-search-result").forEach((node) => {
+    node.onclick = () => {
+      const entry = matches[Number(node.getAttribute("data-result-index"))];
+      if (!entry) return;
+      const list = entry.item.closest(".playlist-list");
+      if (list) list.style.display = "block";
+      playPlaylistItem(entry.item);
+      results.style.display = "none";
+    };
+  });
+}
+
 function playVideo(select) {
   const selected = select.options[select.selectedIndex];
 
@@ -632,6 +728,8 @@ function togglePlaylistSection(button) {
   const isOpen = list.style.display === "block";
   list.style.display = isOpen ? "none" : "block";
 }
+
+document.addEventListener("DOMContentLoaded", initVideoSearchIndex);
 
 
 function setVideoActionVisibility(card, visible) {
