@@ -535,6 +535,22 @@ button:hover {
 
 <script>
 let allVideoIndex = [];
+const SECTION_ALIAS_KEYWORDS = {
+  // Add section-name aliases here so search can find related videos even when the
+  // video title itself doesn't contain those words.
+  // Format: "Section Name (exactly as shown in dropdown)": ["alias one", "alias two"]
+  "Guard Retention": ["lachlan giles", "lachlan", "submeta"],
+};
+
+function getAliasTermsForSection(sectionLabel) {
+  if (!sectionLabel) return [];
+  const exact = SECTION_ALIAS_KEYWORDS[sectionLabel];
+  if (exact) return exact;
+  const normalized = sectionLabel.toLowerCase();
+  // Optional fuzzy fallback for related naming variants.
+  if (normalized.includes("guard retention")) return ["lachlan giles", "lachlan", "submeta"];
+  return [];
+}
 
 function initVideoSearchIndex() {
   allVideoIndex = [];
@@ -545,10 +561,18 @@ function initVideoSearchIndex() {
     Array.from(select.options).forEach((option) => {
       if (!option.value || option.disabled) return;
       const section = option.parentElement?.label || "";
+      const aliasTerms = getAliasTermsForSection(section);
       allVideoIndex.push({
         title: option.textContent.trim().replace(/^📝\s*/, ""),
         category,
         section,
+        aliasTerms,
+        searchableText: [
+          option.textContent.trim().replace(/^📝\s*/, ""),
+          category,
+          section,
+          ...aliasTerms
+        ].join(" ").toLowerCase(),
         option,
         select
       });
@@ -567,7 +591,7 @@ function searchVideos(query) {
   }
 
   const matches = allVideoIndex
-    .filter((entry) => entry.title.toLowerCase().includes(normalized))
+    .filter((entry) => entry.searchableText.includes(normalized))
     .slice(0, 12);
 
   if (!matches.length) {
@@ -587,26 +611,21 @@ function searchVideos(query) {
       if (!entry) return;
       entry.option.selected = true;
       playVideo(entry.select);
-      const card = entry.select.closest(".card"); 
-        if (card) scrollToVideoPlayer(card);
+      const card = entry.select.closest(".card");
+      const anchor = card?.querySelector(".category-title") || card;
+      if (anchor) scrollAnchorIntoViewIfNeeded(anchor);
       results.style.display = "none";
     };
   });
 }
 
-function scrollToVideoPlayer(card) {
-  const video = card.querySelector("video");
-  if (!video) return;
-
-  setTimeout(() => {
-    const offset = 90; // space above video
-    const videoTop = video.getBoundingClientRect().top + window.scrollY;
-
-    window.scrollTo({
-      top: videoTop - offset,
-      behavior: "smooth"
-    });
-  }, 150);
+function scrollAnchorIntoViewIfNeeded(anchor) {
+  const rect = anchor.getBoundingClientRect();
+  const topSafe = 80;
+  const bottomSafe = window.innerHeight - 20;
+  const isFullyVisible = rect.top >= topSafe && rect.bottom <= bottomSafe;
+  if (isFullyVisible) return;
+  anchor.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function playVideo(select) {
