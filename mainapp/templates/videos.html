@@ -766,12 +766,8 @@ async function requestSiteNotifications() {
   const pushStatus = await statusRes.json();
 
   const publicKey = '{{ web_push_public_key|escapejs }}';
-  if (!publicKey || !pushStatus.has_private_key || !pushStatus.has_pywebpush) {
-    const missing = [];
-    if (!publicKey) missing.push('public key');
-    if (!pushStatus.has_private_key) missing.push('private key');
-    if (!pushStatus.has_pywebpush) missing.push('pywebpush package');
-    showToast(`Notifications enabled locally. Missing server push setup: ${missing.join(', ')}`, true);
+  if (!publicKey) {
+    showToast('Missing server push setup: public key', true);
     updateNotificationButton();
     return;
   }
@@ -792,7 +788,14 @@ async function requestSiteNotifications() {
       body: JSON.stringify(sub),
     });
 
-    showToast('Push notifications enabled');
+    if (!pushStatus.has_private_key || !pushStatus.has_pywebpush) {
+      const missing = [];
+      if (!pushStatus.has_private_key) missing.push('private key');
+      if (!pushStatus.has_pywebpush) missing.push('pywebpush package');
+      showToast(`Push subscribed. Server still missing: ${missing.join(', ')}`, true);
+    } else {
+      showToast('Push notifications enabled');
+    }
     updateNotificationButton();
   } catch (e) {
     showToast('Could not enable push notifications', true);
