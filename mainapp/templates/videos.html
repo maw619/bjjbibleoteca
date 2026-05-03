@@ -364,6 +364,7 @@ button:hover {
   {% if user.is_authenticated %}
     Welcome, {{ user.username }} |
     <a href="{% url 'notes' %}" style="color:#60a5fa; margin-right:10px;">Notes</a>
+    <button id="enableNotificationsBtn" onclick="requestSiteNotifications()" style="width:auto;margin:0 10px 0 0;padding:6px 10px;background:#1e293b;border:1px solid #334155;border-radius:8px;font-size:12px;">Enable Notifications</button>
     <a href="{% url 'logout' %}" style="color:#60a5fa;">Logout</a>
   {% else %}
     <a href="{% url 'login' %}" style="color:#60a5fa;">Login</a> |

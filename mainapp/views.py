@@ -7,10 +7,35 @@ import json
 from django.utils import timezone
 from django.db import connection
 from django.db.models import Count
+from django.conf import settings
 from django.db.utils import OperationalError, ProgrammingError
 
 
 
+
+def _video_likes_table_available():
+    try:
+        VideoLike.objects.exists()
+        return True
+    except (OperationalError, ProgrammingError):
+        return False
+
+
+
+@login_required
+def push_status(request):
+    try:
+        import pywebpush  # noqa: F401
+        has_pywebpush = True
+    except Exception:
+        has_pywebpush = False
+
+    return JsonResponse({
+        "has_public_key": bool(settings.WEB_PUSH_PUBLIC_KEY),
+        "has_private_key": bool(settings.WEB_PUSH_PRIVATE_KEY),
+        "has_claims_sub": bool(settings.WEB_PUSH_CLAIMS_SUB),
+        "has_pywebpush": has_pywebpush,
+    })
 
 @login_required
 def notes_list(request):
@@ -205,6 +230,7 @@ def save_note(request):
             timestamp=float(timestamp)
         )
 
+        _notify_user_push(request.user, "Note saved", f"{video.title}")
         return JsonResponse({"status": "success", "note_id": note.id})
     
 @require_POST
@@ -294,6 +320,7 @@ def video_dropdown(request):
         'recent_notes': recent_notes,
         'liked_videos': liked_videos,
         'has_comments_table': has_comments_table,
+        'web_push_public_key': settings.WEB_PUSH_PUBLIC_KEY,
     })
 
 from django.contrib.auth import login, logout
