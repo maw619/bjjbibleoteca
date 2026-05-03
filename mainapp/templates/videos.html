@@ -586,9 +586,9 @@ function searchVideos(query) {
       if (!entry) return;
       entry.option.selected = true;
       playVideo(entry.select);
-      const cardVideo = entry.select.closest(".card")?.querySelector("video");
-      if (cardVideo) {
-        const y = cardVideo.getBoundingClientRect().top + window.scrollY - 12;
+      const card = entry.select.closest(".card");
+      if (card) {
+        const y = card.getBoundingClientRect().top + window.scrollY - 8;
         window.scrollTo({ top: Math.max(y, 0), behavior: "smooth" });
       }
       results.style.display = "none";
