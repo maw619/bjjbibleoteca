@@ -502,6 +502,7 @@ button:hover {
     <div id="likedVideosList">
     {% for video in liked_videos %}
       <div class="sidebar-note"
+           data-video-id="{{ video.id }}"
            data-url="{{ video.url }}"
            data-timestamp="0"
            data-title="{{ video.title|escapejs }}"
@@ -519,6 +520,7 @@ button:hover {
     <div id="notesActivityList">
     {% for note in recent_notes %}
       <div class="sidebar-note"
+           data-video-id="{{ note.video.id }}"
            data-url="{{ note.video.url }}"
            data-timestamp="{{ note.timestamp|default:0 }}"
            data-title="{{ note.video.title|escapejs }}"
@@ -558,6 +560,10 @@ button:hover {
 
 <script>
 let allVideoIndex = [];
+const VIDEO_PROGRESS_PREFIX = "bjj-video-progress:";
+const VIDEO_PROGRESS_SAVE_INTERVAL_MS = 5000;
+const VIDEO_PROGRESS_END_BUFFER_SECONDS = 5;
+
 const SECTION_ALIAS_KEYWORDS = {
   // Add section-name aliases here so search can find related videos even when the
   // video title itself doesn't contain those words.
@@ -668,6 +674,71 @@ function scrollToVideoPlayer(card) {
   }, 150);
 }
 
+function videoProgressKey(videoId) {
+  return `${VIDEO_PROGRESS_PREFIX}${videoId}`;
+}
+
+function getStoredVideoProgress(videoId) {
+  if (!videoId) return 0;
+
+  try {
+    const progress = parseFloat(localStorage.getItem(videoProgressKey(videoId)));
+    return Number.isFinite(progress) && progress > 0 ? progress : 0;
+  } catch (error) {
+    return 0;
+  }
+}
+
+function saveVideoProgress(videoId, seconds, duration) {
+  if (!videoId || !Number.isFinite(seconds)) return;
+
+  try {
+    if (Number.isFinite(duration) && duration > 0 && seconds >= duration - VIDEO_PROGRESS_END_BUFFER_SECONDS) {
+      localStorage.removeItem(videoProgressKey(videoId));
+      return;
+    }
+
+    localStorage.setItem(videoProgressKey(videoId), String(Math.max(0, seconds)));
+  } catch (error) {
+    // Storage can be unavailable in private browsing or locked-down browsers.
+  }
+}
+
+function attachVideoProgressTracking(card, video) {
+  if (video.dataset.progressTrackingAttached === "true") return;
+
+  video.dataset.progressTrackingAttached = "true";
+  video.dataset.lastProgressSave = "0";
+
+  video.addEventListener("timeupdate", () => {
+    const now = Date.now();
+    const lastSave = Number(video.dataset.lastProgressSave || 0);
+    if (now - lastSave < VIDEO_PROGRESS_SAVE_INTERVAL_MS) return;
+
+    saveVideoProgress(card.dataset.videoId, video.currentTime, video.duration);
+    video.dataset.lastProgressSave = String(now);
+  });
+
+  video.addEventListener("pause", () => {
+    saveVideoProgress(card.dataset.videoId, video.currentTime, video.duration);
+  });
+
+  video.addEventListener("ended", () => {
+    saveVideoProgress(card.dataset.videoId, video.currentTime, video.duration);
+  });
+}
+
+function resumeVideoIfAvailable(video, videoId) {
+  const savedTime = getStoredVideoProgress(videoId);
+  if (!savedTime) return;
+
+  const duration = Number.isFinite(video.duration) ? video.duration : 0;
+  if (duration && savedTime >= duration - VIDEO_PROGRESS_END_BUFFER_SECONDS) return;
+
+  video.currentTime = savedTime;
+  showToast(`Resuming at ${formatTime(savedTime)}`);
+}
+
 function playVideo(select) {
   const selected = select.options[select.selectedIndex];
 
@@ -676,12 +747,23 @@ function playVideo(select) {
 
   const card = select.closest(".card");
   const video = card.querySelector("video");
+  const previousVideoId = card.dataset.videoId;
 
-  video.src = videoUrl;
-  video.play();
+  if (previousVideoId) {
+    saveVideoProgress(previousVideoId, video.currentTime, video.duration);
+    video.pause();
+  }
 
   // store video ID
   card.dataset.videoId = videoId;
+
+  attachVideoProgressTracking(card, video);
+  video.dataset.lastProgressSave = "0";
+  video.onloadedmetadata = () => {
+    resumeVideoIfAvailable(video, videoId);
+    video.play();
+  };
+  video.src = videoUrl;
 
   loadNotes(card, videoId);
   loadVideoLike(card, videoId);
@@ -978,7 +1060,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function openSidebarVideoModal(noteCard) {
   const url = noteCard.dataset.url;
-  const timestamp = parseFloat(noteCard.dataset.timestamp) || 0;
+  const videoId = noteCard.dataset.videoId;
+  const noteTimestamp = parseFloat(noteCard.dataset.timestamp) || 0;
+  const timestamp = noteTimestamp || getStoredVideoProgress(videoId);
   const title = noteCard.dataset.title || "Video";
 
   const modal = document.getElementById("sidebarVideoModal");
