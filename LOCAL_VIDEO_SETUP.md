@@ -43,7 +43,24 @@ python manage.py import_local_videos --root /mnt/BJJ_STORAGE --url-prefix /media
 
 The command creates missing categories, sections, and videos. If a matching video title already exists in the same section, it updates that row's URL from S3 to the local `/media/videos/...` URL.
 
-## 4. Serve the files
+## 4. Adding more videos later
+
+Yes — after copying another folder of videos anywhere under `/mnt/BJJ_STORAGE`, rerun the same command:
+
+```bash
+python manage.py import_local_videos --root /mnt/BJJ_STORAGE --url-prefix /media/videos/
+```
+
+The importer is safe to rerun:
+
+- New video files create new database rows.
+- Existing videos with the same title in the same section are left unchanged if their URL is already correct.
+- Existing videos with the same title in the same section get their URL updated if the stored URL still points somewhere else, such as S3.
+- Files removed from disk are **not** deleted from the database automatically. Delete those rows in Django admin if you remove videos permanently.
+
+If the new videos are on a different mounted disk, either copy or mount that disk inside `/mnt/BJJ_STORAGE`, or run the command again with that disk as `--root` and use a matching web-server URL prefix.
+
+## 5. Serve the files
 
 In development, Django serves `/media/videos/` from `/mnt/BJJ_STORAGE` when `DEBUG=True`.
 
