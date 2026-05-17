@@ -129,6 +129,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Local video library settings. Map LOCAL_VIDEO_URL to LOCAL_VIDEO_ROOT in
+# Django during DEBUG and in nginx/apache for production.
+LOCAL_VIDEO_ROOT = os.environ.get('LOCAL_VIDEO_ROOT', '/mnt/BJJ_STORAGE')
+LOCAL_VIDEO_URL = os.environ.get('LOCAL_VIDEO_URL', '/media/videos/')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
