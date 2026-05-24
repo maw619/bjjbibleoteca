@@ -24,5 +24,5 @@ urlpatterns = [
     path('', include('mainapp.urls'))
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.LOCAL_VIDEO_URL, document_root=settings.LOCAL_VIDEO_ROOT)
+#if settings.DEBUG:
+#    urlpatterns += static(settings.LOCAL_VIDEO_URL, document_root=settings.LOCAL_VIDEO_ROOT)

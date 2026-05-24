@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(-au2@_g#pdzaw&g!gzmekva@yptg!0(0_li7e25(7w-qfbac5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['https://bjjbiblioteca.com', 'bjjbiblioteca.com','bjjrepo.com','https://bjjrepo.com','72.83.183.174', '127.0.0.1']
 
@@ -86,23 +86,23 @@ WSGI_APPLICATION = 'bjjlibrary.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'bjjbiblioteca',
-#        'USER': 'marco',
-#        'PASSWORD': 'Charlie23@',
-#        'HOST': 'localhost', 
-#        'PORT': '3306',
-#    }
-#}
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bjjbiblioteca',
+        'USER': 'marco',
+        'PASSWORD': 'Charlie23@',
+        'HOST': 'localhost', 
+        'PORT': '3306',
     }
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
 
 
 # Password validation
