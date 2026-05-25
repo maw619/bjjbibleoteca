@@ -609,6 +609,27 @@ function initVideoSearchIndex() {
   });
 }
 
+function escapeHtml(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function escapeRegExp(text) {
+  return String(text || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightMatch(text, query) {
+  const safeText = escapeHtml(text);
+  const normalizedQuery = (query || "").trim();
+  if (!normalizedQuery) return safeText;
+  const pattern = new RegExp(`(${escapeRegExp(normalizedQuery)})`, "ig");
+  return safeText.replace(pattern, "<mark>$1</mark>");
+}
+
 function searchVideos(query) {
   const results = document.getElementById("videoSearchResults");
   if (!results) return;
@@ -630,7 +651,7 @@ function searchVideos(query) {
   }
 
   results.innerHTML = matches.map((entry, idx) =>
-    `<div class="video-search-result" data-result-index="${idx}"><strong>${entry.title}</strong><br><small style="color:#94a3b8;">${entry.category}${entry.section ? " • " + entry.section : ""}</small></div>`
+    `<div class="video-search-result" data-result-index="${idx}"><strong>${highlightMatch(entry.title, normalized)}</strong><br><small style="color:#94a3b8;">${highlightMatch(entry.category, normalized)}${entry.section ? " • " + highlightMatch(entry.section, normalized) : ""}</small></div>`
   ).join("");
   results.style.display = "block";
 
