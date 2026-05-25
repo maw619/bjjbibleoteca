@@ -139,7 +139,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Local video library settings. Map LOCAL_VIDEO_URL to LOCAL_VIDEO_ROOT in
 # Django during DEBUG and in nginx/apache for production.
