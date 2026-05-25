@@ -11,16 +11,16 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "category")
-    list_filter = ("category",)
-    search_fields = ("name", "category__name")
+    list_display = ("id", "name", "instructor", "category")
+    list_filter = ("category", "instructor")
+    search_fields = ("name", "instructor", "category__name")
 
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "section")
     list_filter = ("section", "section__category")
-    search_fields = ("title", "section__name", "section__category__name")
+    search_fields = ("title", "section__name", "section__instructor", "section__category__name")
 
 
 @admin.register(Note)

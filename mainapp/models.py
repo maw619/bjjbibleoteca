@@ -8,6 +8,7 @@ class Category(models.Model):
 class Section(models.Model):
     name = models.CharField(max_length=255)
     category = models.ForeignKey(Category, related_name="sections", on_delete=models.CASCADE)
+    instructor = models.CharField(max_length=255, blank=True, default="")
 
 class Video(models.Model):
     title = models.CharField(max_length=255)
