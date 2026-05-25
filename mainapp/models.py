@@ -5,9 +5,24 @@ from django.contrib.auth.models import User
 class Category(models.Model):
     name = models.CharField(max_length=255)
 
+
+class Instructor(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Section(models.Model):
     name = models.CharField(max_length=255)
     category = models.ForeignKey(Category, related_name="sections", on_delete=models.CASCADE)
+    instructor = models.ForeignKey(
+        Instructor,
+        related_name="sections",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
 class Video(models.Model):
     title = models.CharField(max_length=255)

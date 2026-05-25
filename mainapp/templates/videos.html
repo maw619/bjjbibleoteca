@@ -467,7 +467,8 @@ button:hover {
         <option disabled selected>Select a video</option>
 
         {% for section in category.sections.all %}
-        <optgroup label="{{ section.name }} ({{ section.commenter_count }} commenters)">
+        <optgroup label="{{ section.name }}{% if section.instructor %} — {{ section.instructor }}{% endif %} ({{ section.commenter_count }} commenters)"
+                  data-instructor="{{ section.instructor|default_if_none:''|escape }}">
           {% for video in section.videos.all %}
           <option value="{{ video.url }}" data-id="{{ video.id }}" data-base-title="{{ video.title|escape }}">
             {% if video.id in noted_video_ids %}📝 {% endif %}{{ video.title }}
@@ -590,16 +591,19 @@ function initVideoSearchIndex() {
     Array.from(select.options).forEach((option) => {
       if (!option.value || option.disabled) return;
       const section = option.parentElement?.label || "";
+      const instructor = option.parentElement?.dataset?.instructor?.trim() || "";
       const aliasTerms = getAliasTermsForSection(section);
       allVideoIndex.push({
         title: option.textContent.trim().replace(/^📝\s*/, ""),
         category,
         section,
+        instructor,
         aliasTerms,
         searchableText: [
           option.textContent.trim().replace(/^📝\s*/, ""),
           category,
           section,
+          instructor,
           ...aliasTerms
         ].join(" ").toLowerCase(),
         option,
@@ -607,6 +611,27 @@ function initVideoSearchIndex() {
       });
     });
   });
+}
+
+function escapeHtml(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function escapeRegExp(text) {
+  return String(text || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightMatch(text, query) {
+  const safeText = escapeHtml(text);
+  const normalizedQuery = (query || "").trim();
+  if (!normalizedQuery) return safeText;
+  const pattern = new RegExp(`(${escapeRegExp(normalizedQuery)})`, "ig");
+  return safeText.replace(pattern, "<mark>$1</mark>");
 }
 
 function searchVideos(query) {
@@ -630,7 +655,7 @@ function searchVideos(query) {
   }
 
   results.innerHTML = matches.map((entry, idx) =>
-    `<div class="video-search-result" data-result-index="${idx}"><strong>${entry.title}</strong><br><small style="color:#94a3b8;">${entry.category}${entry.section ? " • " + entry.section : ""}</small></div>`
+    `<div class="video-search-result" data-result-index="${idx}"><strong>${highlightMatch(entry.title, normalized)}</strong><br><small style="color:#94a3b8;">${highlightMatch(entry.category, normalized)}${entry.section ? " • " + highlightMatch(entry.section, normalized) : ""}${entry.instructor ? " • Instructor: " + highlightMatch(entry.instructor, normalized) : ""}</small></div>`
   ).join("");
   results.style.display = "block";
 
