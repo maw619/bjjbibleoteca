@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import Category, Instructor, Note, Section, Video
+from .models import Category, Instructor, Note, Section, Series, Video
+
+
+@admin.register(Series)
+class SeriesAdmin(admin.ModelAdmin):
+    list_display = ("id", "title")
+    search_fields = ("title",)
 
 
 @admin.register(Instructor)
@@ -17,9 +23,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "instructor", "category")
-    list_filter = ("category", "instructor")
-    search_fields = ("name", "instructor", "category__name")
+    list_display = ("id", "name", "series", "instructor", "category")
+    list_filter = ("category", "series", "instructor")
+    search_fields = ("name", "series__title", "instructor__name", "category__name")
 
 
 @admin.register(Video)

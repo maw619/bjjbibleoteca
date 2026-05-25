@@ -16,9 +16,23 @@ class Instructor(models.Model):
         return self.name
 
 
+class Series(models.Model):
+    title = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Section(models.Model):
     name = models.CharField(max_length=255)
     category = models.ForeignKey(Category, related_name="sections", on_delete=models.CASCADE)
+    series = models.ForeignKey(
+        Series,
+        related_name="sections",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     instructor = models.ForeignKey(
         Instructor,
         related_name="sections",
