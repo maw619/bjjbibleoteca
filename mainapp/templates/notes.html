@@ -4,6 +4,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Notes</title>
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
 
 <style>
 body {
@@ -217,11 +218,7 @@ body {
 <body>
 <div id="toast" class="toast"></div>
 
-<div class="topbar">
-  <a href="{% url 'home' %}">Videos</a>
-  <a href="{% url 'forum' %}">Forum</a>
-  <a href="{% url 'logout' %}">Logout</a>
-</div>
+<nav class="top-nav"><a class="brand" href="{% url 'home' %}">BJJ Library</a><div class="links"><a href="{% url 'home' %}">Videos</a><a class="active" href="{% url 'notes' %}">Notes</a><a href="{% url 'forum' %}">Forum</a><a href="{% url 'logout' %}">Logout</a></div></nav>
 
 <div class="container">
   <div class="wrapper">

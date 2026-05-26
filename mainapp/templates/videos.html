@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BJJ Training Library</title>
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
 
 <link rel="icon" href="{% static 'favicon.ico' %}">
 
@@ -431,17 +432,7 @@ button:hover {
 <body>
 <div id="toast" class="toast"></div>
 <button id="mobileSidebarToggle" class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()">Activity</button>
-<div class="topbar">
-  {% if user.is_authenticated %}
-    Welcome, {{ user.username }} |
-    <a href="{% url 'notes' %}" style="color:#60a5fa; margin-right:10px;">Notes</a>
-    <a href="{% url 'forum' %}" style="color:#60a5fa; margin-right:10px;">Forum</a>
-    <a href="{% url 'logout' %}" style="color:#60a5fa;">Logout</a>
-  {% else %}
-    <a href="{% url 'login' %}" style="color:#60a5fa;">Login</a> |
-    <a href="{% url 'register' %}" style="color:#60a5fa;">Register</a>
-  {% endif %}
-</div>
+<nav class="top-nav"><a class="brand" href="{% url 'home' %}">BJJ Library</a><div class="links"><span class="welcome">{{ user.username }}</span><a class="active" href="{% url 'home' %}">Videos</a><a href="{% url 'notes' %}">Notes</a><a href="{% url 'forum' %}">Forum</a><a href="{% url 'logout' %}">Logout</a></div></nav>
 
 <div class="video-search-wrap">
   <label class="video-search-label" for="videoSearchInput">Search videos</label>
