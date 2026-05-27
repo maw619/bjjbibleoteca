@@ -122,5 +122,13 @@
       box.innerHTML = `<div class="meta">Preview unavailable. <a href="${url}" target="_blank" style="color:#93c5fd">Open link</a></div>`;
     });
   </script>
+
+<nav class="mobile-tabs">
+  <a href="{% url 'home' %}">Videos</a>
+  <a href="{% url 'notes' %}">Notes</a>
+  <a href="{% url 'forum' %}" class="active">Forum</a>
+  <a href="{% url 'logout' %}">Logout</a>
+</nav>
+
 </body>
 </html>

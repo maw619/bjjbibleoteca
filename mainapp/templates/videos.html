@@ -443,7 +443,7 @@ button:hover {
   <div id="videoSearchResults" class="video-search-results" style="display:none;"></div>
 </div>
 
-<div class="container">
+<div class="page"><div class="container">
   <div class="layout">
   <div class="wrapper">
     {% for category in categories %}
@@ -540,7 +540,7 @@ button:hover {
     <a href="{% url 'notes' %}" style="color:#60a5fa;">Open full notes page →</a>
   </aside>
 </div>
-</div>
+</div></div>
 
 <div id="sidebarVideoModal" class="modal">
   <div class="modal-content">
@@ -1106,6 +1106,14 @@ function closeSidebarModal() {
 
 
 
+
+
+<nav class="mobile-tabs">
+  <a href="{% url 'home' %}" class="active">Videos</a>
+  <a href="{% url 'notes' %}">Notes</a>
+  <a href="{% url 'forum' %}">Forum</a>
+  <a href="{% url 'logout' %}">Logout</a>
+</nav>
 
 </body>
 </html>

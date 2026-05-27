@@ -220,7 +220,7 @@ body {
 
 <nav class="top-nav"><a class="brand" href="{% url 'home' %}">BJJ Library</a><div class="links"><a href="{% url 'home' %}">Videos</a><a class="active" href="{% url 'notes' %}">Notes</a><a href="{% url 'forum' %}">Forum</a><a href="{% url 'logout' %}">Logout</a></div></nav>
 
-<div class="container">
+<div class="page"><div class="container">
   <div class="wrapper">
 
     <h2 style="text-align:center;">Training Notes</h2>
@@ -295,7 +295,7 @@ body {
     {% endfor %}
 
   </div>
-</div>
+</div></div>
 
 <!-- 🎬 MODAL -->
 <div id="videoModal" class="modal">
@@ -482,6 +482,14 @@ function getCookie(name) {
 }
 
 </script>
+
+
+<nav class="mobile-tabs">
+  <a href="{% url 'home' %}">Videos</a>
+  <a href="{% url 'notes' %}" class="active">Notes</a>
+  <a href="{% url 'forum' %}">Forum</a>
+  <a href="{% url 'logout' %}">Logout</a>
+</nav>
 
 </body>
 </html>
