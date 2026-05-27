@@ -7,7 +7,7 @@
   <title>Community Forum</title>
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <style>
-    body { font-family: Arial; background:#0f172a; color:#e2e8f0; margin:0; padding:16px; }
+    body { font-family: Arial; background:#0f172a; color:#e2e8f0; margin:0; }
     .card { background:#1e293b; padding:14px; border-radius:10px; margin-bottom:12px; }
     .top a { color:#60a5fa; margin-right:12px; }
     input, textarea { width:100%; padding:8px; margin:6px 0; border-radius:8px; border:1px solid #334155; background:#0b1220; color:#e2e8f0; }
@@ -22,7 +22,7 @@
 </head>
 <body>
   <nav class="top-nav"><a class="brand" href="/">BJJ Library</a><div class="links"><a href="/">Videos</a><a href="/notes/">Notes</a><a class="active" href="/forum/">Forum</a><a href="/logout/">Logout</a></div></nav>
-  <h2>Community Links</h2>
+  <div class="page"><h2>Community Links</h2>
 
   <div class="card">
     <form method="post" action="/forum/add/">{% csrf_token %}
@@ -55,6 +55,7 @@
   {% empty %}
   <p>No posts yet.</p>
   {% endfor %}
+</div>
 
   <script>
     function youtubeEmbed(rawUrl) {
