@@ -1,17 +1,13 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/app.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+{% block nav %}{% endblock %}
+{% block mobile_tabs %}{% endblock %}
+
+{% block content %}
 <div class="auth-wrap">
   <div class="panel auth-card">
-    <h2 style="text-align:center">Create Account</h2>
+    <h2 class="text-center">Create Account</h2>
     <form method="POST">
       {% csrf_token %}
       <div class="form-row"><label for="id_username">Username</label>{{ form.username }}</div>
@@ -25,8 +21,7 @@
       </div>
       {% endif %}
     </form>
-    <p style="text-align:center;margin-top:12px"><a href="{% url 'login' %}">Already have an account?</a></p>
+    <p class="text-center auth-link"><a href="{% url 'login' %}">Already have an account?</a></p>
   </div>
 </div>
-</body>
-</html>
+{% endblock %}

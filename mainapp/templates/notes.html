@@ -1,231 +1,16 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notes</title>
-<link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% extends "base.html" %}
 
-<style>
-body {
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: white;
-  margin: 0;
-}
+{% block title %}Notes{% endblock %}
+{% block nav_notes_active %}active{% endblock %}
+{% block mobile_notes_active %}active{% endblock %}
 
-.container {
-  display: flex;
-  justify-content: center;
-  padding: 15px;
-}
-
-.wrapper {
-  width: 100%;
-  max-width: 600px;
-}
-
-/* Card */
-.card {
-  background: #020617;
-  border-radius: 16px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.card:hover {
-  transform: scale(1.02);
-}
-
-.title {
-  font-weight: bold;
-}
-
-.section {
-  font-size: 13px;
-  color: #94a3b8;
-}
-
-.note {
-  margin-top: 10px;
-}
-
-.meta {
-  font-size: 12px;
-  color: #64748b;
-  margin-top: 10px;
-}
-
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.9);
-}
-
-.modal-content {
-  position: relative;
-  margin: 5% auto;
-  width: 95%;
-  max-width: 800px;
-}
-
-.modal video {
-  width: 100%;
-  border-radius: 12px;
-}
-
-.modal-title {
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-.close {
-  position: absolute;
-  top: -30px;
-  right: 0;
-  font-size: 30px;
-  cursor: pointer;
-  color: white;
-}
-
-/* Top nav */
-.topbar {
-  text-align: right;
-  padding: 10px;
-}
-.topbar a {
-  color: #60a5fa;
-  margin-left: 10px;
-  text-decoration: none;
-}
-
-.delete-btn {
-  margin-top: 10px;
-  width: 100%;
-  background: #ef4444;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-}
-
-.delete-btn:hover {
-  background: #dc2626;
-}
-
-.comments {
-  margin-top: 12px;
-  border-top: 1px solid #1e293b;
-  padding-top: 10px;
-}
-
-.comment-item {
-  background: #0f172a;
-  padding: 8px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-}
-
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
-.comment-meta {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-bottom: 4px;
-}
-
-.comment-delete-btn {
-  border: none;
-  border-radius: 6px;
-  background: #ef4444;
-  color: white;
-  font-size: 11px;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-
-.comment-form {
-  display: flex;
-  gap: 8px;
-}
-
-.comment-input {
-  flex: 1;
-  border-radius: 8px;
-  border: 1px solid #334155;
-  background: #020617;
-  color: white;
-  padding: 8px;
-}
-
-.comment-btn {
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-
-
-
-
-
-
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #22c55e;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.3s ease, bottom 0.3s ease;
-  z-index: 9999;
-}
-
-.toast.show {
-  opacity: 1;
-  bottom: 40px;
-}
-
-.toast.error {
-  background: #ef4444;
-}
-</style>
-</head>
-
-<body>
-<div id="toast" class="toast"></div>
-
-<nav class="top-nav"><a class="brand" href="{% url 'home' %}">BJJ Library</a><div class="links"><a href="{% url 'home' %}">Videos</a><a class="active" href="{% url 'notes' %}">Notes</a><a href="{% url 'forum' %}">Forum</a><a href="{% url 'logout' %}">Logout</a></div></nav>
-
+{% block content %}
 <div class="page"><div class="container">
   <div class="wrapper">
 
-    <h2 style="text-align:center;">Training Notes</h2>
+    <h2 class="page-heading">Training Notes</h2>
     {% if not has_comments_table %}
-      <div class="card" style="border:1px solid #f59e0b; color:#fef3c7;">
+      <div class="card warning-card">
         Comments are unavailable in this database right now. Run <code>python manage.py migrate</code> to sync tables.
       </div>
     {% endif %}
@@ -291,7 +76,7 @@ body {
       </div>
     </div>
     {% empty %}
-    <p style="text-align:center; color:#94a3b8;">No notes yet.</p>
+    <p class="empty-state">No notes yet.</p>
     {% endfor %}
 
   </div>
@@ -307,7 +92,9 @@ body {
     <video id="modalVideo" controls></video>
   </div>
 </div>
+{% endblock %}
 
+{% block extra_scripts %}
 <script>
 function openVideoModal(card) {
   const url = card.dataset.url;
@@ -482,14 +269,4 @@ function getCookie(name) {
 }
 
 </script>
-
-
-<nav class="mobile-tabs">
-  <a href="{% url 'home' %}">Videos</a>
-  <a href="{% url 'notes' %}" class="active">Notes</a>
-  <a href="{% url 'forum' %}">Forum</a>
-  <a href="{% url 'logout' %}">Logout</a>
-</nav>
-
-</body>
-</html>
+{% endblock %}

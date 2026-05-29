@@ -1,28 +1,11 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Community Forum</title>
-<link rel="stylesheet" href="{% static 'css/app.css' %}">
-  <style>
-    body { font-family: Arial; background:#0f172a; color:#e2e8f0; margin:0; }
-    .card { background:#1e293b; padding:14px; border-radius:10px; margin-bottom:12px; }
-    .top a { color:#60a5fa; margin-right:12px; }
-    input, textarea { width:100%; padding:8px; margin:6px 0; border-radius:8px; border:1px solid #334155; background:#0b1220; color:#e2e8f0; }
-    button { padding:8px 12px; border:none; border-radius:8px; background:#2563eb; color:white; cursor:pointer; }
-    .meta { color:#94a3b8; font-size:12px; margin-top:4px; }
-    .preview { margin-top:10px; }
-    .preview iframe, .preview video { width:100%; aspect-ratio:16/9; height:auto; max-height:480px; object-fit:contain; background:#020617; border-radius:8px; border:1px solid #334155; }
-    .preview img { width:auto; max-width:100%; height:auto; max-height:480px; object-fit:contain; background:#020617; border-radius:8px; border:1px solid #334155; display:block; margin:auto; }
-    .actions{display:flex;gap:8px;margin-top:8px}
-    .delete{background:#b91c1c}
-  </style>
-</head>
-<body>
-  <nav class="top-nav"><a class="brand" href="/">BJJ Library</a><div class="links"><a href="/">Videos</a><a href="/notes/">Notes</a><a class="active" href="/forum/">Forum</a><a href="/logout/">Logout</a></div></nav>
-  <div class="page"><h2>Community Links</h2>
+{% extends "base.html" %}
+
+{% block title %}Community Forum{% endblock %}
+{% block nav_forum_active %}active{% endblock %}
+{% block mobile_forum_active %}active{% endblock %}
+
+{% block content %}
+<div class="page"><h2>Community Links</h2>
 
   <div class="card">
     <form method="post" action="/forum/add/">{% csrf_token %}
@@ -35,7 +18,7 @@
 
   {% for post in posts %}
   <div class="card">
-    <a href="{{ post.url }}" target="_blank" style="color:#93c5fd;font-weight:bold">{{ post.title }}</a>
+    <a class="forum-post-link" href="{{ post.url }}" target="_blank">{{ post.title }}</a>
     <div class="meta">posted by {{ post.user.username }} • {{ post.created_at|timesince }} ago</div>
     {% if post.description %}<p>{{ post.description }}</p>{% endif %}
 
@@ -56,8 +39,10 @@
   <p>No posts yet.</p>
   {% endfor %}
 </div>
+{% endblock %}
 
-  <script>
+{% block extra_scripts %}
+<script>
     function youtubeEmbed(rawUrl) {
       try {
         const parsed = new URL(rawUrl);
@@ -119,16 +104,7 @@
         return;
       }
 
-      box.innerHTML = `<div class="meta">Preview unavailable. <a href="${url}" target="_blank" style="color:#93c5fd">Open link</a></div>`;
+      box.innerHTML = `<div class="meta">Preview unavailable. <a class="muted-link" href="${url}" target="_blank">Open link</a></div>`;
     });
   </script>
-
-<nav class="mobile-tabs">
-  <a href="{% url 'home' %}">Videos</a>
-  <a href="{% url 'notes' %}">Notes</a>
-  <a href="{% url 'forum' %}" class="active">Forum</a>
-  <a href="{% url 'logout' %}">Logout</a>
-</nav>
-
-</body>
-</html>
+{% endblock %}

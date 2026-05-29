@@ -1,446 +1,21 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BJJ Training Library</title>
-<link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% extends "base.html" %}
 
-<link rel="icon" href="{% static 'favicon.ico' %}">
+{% block title %}BJJ Training Library{% endblock %}
+{% block nav_videos_active %}active{% endblock %}
+{% block mobile_videos_active %}active{% endblock %}
 
-<style>
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: white;
-}
-
-.container {
-  display: flex;
-  justify-content: center;
-  padding: 15px;
-}
-
-.wrapper {
-  width: 100%;
-  max-width: 600px;
-}
-
-.layout {
-  width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-  gap: 18px;
-}
-
-/* Card */
-.card {
-  background: #020617;
-  border-radius: 16px;
-  padding: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  scroll-margin-top: 12px;
-}
-
-/* Title */
-.category-title {
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-/* Dropdown */
-select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: #1e293b;
-  color: white;
-  margin-bottom: 10px;
-}
-
-
-/* Video */
-video {
-  width: 100%;
-  border-radius: 12px;
-}
-
-/* Notes */
-.noteBox {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: #1e293b;
-  color: white;
-  resize: vertical;
-}
-
-.saved-notes {
-  margin-top: 10px;
-}
-
-.saved-note-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 8px;
-  padding: 8px;
-  border-radius: 8px;
-  background: #0f172a;
-}
-
-.saved-note-text {
-  font-size: 13px;
-  color: #cbd5e1;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.delete-note-btn {
-  width: auto;
-  margin-top: 0;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: #ef4444;
-  font-size: 12px;
-}
-
-.delete-note-btn:hover {
-  background: #dc2626;
-}
-
-.video-action-btn.hidden {
-  display: none;
-}
-
-.video-like-btn {
-  width: auto;
-  margin-top: 8px;
-  margin-left: auto;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.18);
-  color: #cbd5e1;
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.video-like-btn:hover {
-  background: rgba(148, 163, 184, 0.28);
-}
-
-.video-like-btn .video-like-count {
-  opacity: 0.9;
-}
-
-/* Button */
-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: none;
-  border-radius: 10px;
-  background: #3b82f6;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #2563eb;
-}
-
-/* Top bar */
-.topbar {
-  text-align: right;
-  padding: 10px;
-}
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #22c55e;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.3s ease, bottom 0.3s ease;
-  z-index: 9999;
-}
-
-.toast.show {
-  opacity: 1;
-  bottom: 40px;
-}
-
-.toast.error {
-  background: #ef4444;
-}
-.note-container {
-  position: relative;
-  margin-top: 10px;
-}
-
-.note-icon {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  font-size: 16px;
-  color: #60a5fa;
-  pointer-events: none; /* click passes through */
-}
-
-.noteBox {
-  width: 100%;
-  padding: 12px 12px 12px 38px;
-  border-radius: 10px;
-  border: none;
-  background: #1e293b;
-  color: white;
-  resize: vertical;
-
-  box-sizing: border-box; /* 🔥 FIX */
-}
-
-.notes-sidebar {
-  background: #020617;
-  border-radius: 16px;
-  padding: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  height: fit-content;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
-}
-
-.sidebar-title {
-  margin: 0 0 8px;
-  font-size: 18px;
-}
-
-.sidebar-subtitle {
-  margin: 0 0 14px;
-  color: #94a3b8;
-  font-size: 13px;
-}
-
-.sidebar-note {
-  background: #0f172a;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-.sidebar-note-meta {
-  font-size: 12px;
-  color: #93c5fd;
-  margin-bottom: 6px;
-}
-
-.sidebar-note-content {
-  font-size: 13px;
-  color: #e2e8f0;
-  white-space: pre-wrap;
-}
-
-.sidebar-comments {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #1e293b;
-}
-
-.sidebar-comment {
-  font-size: 12px;
-  color: #cbd5e1;
-  margin-bottom: 6px;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.85);
-}
-
-.modal-content {
-  margin: 6% auto;
-  width: min(92%, 900px);
-  background: #0f172a;
-  border-radius: 12px;
-  padding: 14px;
-}
-
-.modal-title {
-  margin-bottom: 10px;
-  color: #e2e8f0;
-}
-
-#sidebarModalVideo {
-  width: 100%;
-  border-radius: 10px;
-}
-
-.close {
-  float: right;
-  font-size: 28px;
-  color: #e2e8f0;
-  cursor: pointer;
-}
-
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-.mobile-sidebar-toggle {
-  display: none;
-  position: fixed;
-  right: 14px;
-  bottom: 14px;
-  z-index: 1100;
-  width: auto;
-  margin-top: 0;
-  border: none;
-  border-radius: 999px;
-  padding: 10px 16px;
-  line-height: 1;
-  background: #2563eb;
-  color: white;
-  font-weight: 700;
-  box-shadow: 0 8px 18px rgba(0,0,0,.35);
-}
-
-.video-search-wrap {
-  max-width: 900px;
-  margin: 10px auto 14px;
-  padding: 0 14px;
-  display: block;
-  position: relative;
-  z-index: 20;
-}
-
-.video-search-label {
-  display: block;
-  margin-bottom: 6px;
-  color: #cbd5e1;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.video-search-input-row {
-  display: flex;
-  gap: 8px;
-}
-
-.video-search-input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #334155;
-  background: #0f172a;
-  color: #e2e8f0;
-  box-sizing: border-box;
-}
-
-.video-search-clear-btn {
-  width: auto;
-  margin-top: 0;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid #334155;
-  background: #1e293b;
-  color: #cbd5e1;
-  font-weight: 600;
-}
-
-.video-search-clear-btn:hover {
-  background: #334155;
-}
-
-.video-search-results {
-  margin-top: 8px;
-  border: 1px solid #1e293b;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #020617;
-}
-
-.video-search-result {
-  padding: 10px 12px;
-  border-bottom: 1px solid #1e293b;
-  cursor: pointer;
-}
-
-.video-search-result:last-child {
-  border-bottom: none;
-}
-
-.video-search-result:hover {
-  background: #1e293b;
-}
-
-@media (max-width: 900px) {
-  .notes-sidebar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 18%;
-    z-index: 1000;
-    border-radius: 16px 16px 0 0;
-    transform: translateY(calc(100% + 20px));
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-    transition: transform .25s ease, opacity .2s ease;
-    overflow-y: auto;
-  }
-
-  .notes-sidebar.open {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
-  }
-
-  .mobile-sidebar-toggle {
-    display: inline-block;
-  }
-}
-
-</style>
-</head>
-
-<body>
-<div id="toast" class="toast"></div>
+{% block before_nav %}
 <button id="mobileSidebarToggle" class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()">Activity</button>
-<nav class="top-nav"><a class="brand" href="{% url 'home' %}">BJJ Library</a><div class="links"><span class="welcome">{{ user.username }}</span><a class="active" href="{% url 'home' %}">Videos</a><a href="{% url 'notes' %}">Notes</a><a href="{% url 'forum' %}">Forum</a><a href="{% url 'logout' %}">Logout</a></div></nav>
+{% endblock %}
 
+{% block content %}
 <div class="video-search-wrap">
   <label class="video-search-label" for="videoSearchInput">Search videos</label>
   <div class="video-search-input-row">
     <input id="videoSearchInput" class="video-search-input" type="text" placeholder="Search any video..." oninput="searchVideos(this.value)">
     <button type="button" class="video-search-clear-btn" onclick="clearVideoSearch()">Clear</button>
   </div>
-  <div id="videoSearchResults" class="video-search-results" style="display:none;"></div>
+  <div id="videoSearchResults" class="video-search-results hidden"></div>
 </div>
 
 <div class="page"><div class="container">
@@ -488,7 +63,7 @@ button:hover {
   </div>
 
   <aside class="notes-sidebar" id="notesSidebar">
-    <div style="display:flex;justify-content:flex-end;"><button onclick="closeMobileSidebar()" style="background:none;border:none;color:#e2e8f0;font-size:22px;cursor:pointer;">&times;</button></div>
+    <div class="sidebar-close-row"><button class="sidebar-close-btn" onclick="closeMobileSidebar()">&times;</button></div>
     <h3 class="sidebar-title">❤️ Liked Videos</h3>
     <p class="sidebar-subtitle">Quick access to videos you hearted.</p>
     <div id="likedVideosList">
@@ -503,11 +78,11 @@ button:hover {
         <div class="sidebar-note-content">{{ video.title }}</div>
       </div>
     {% empty %}
-      <p style="color:#94a3b8;">No liked videos yet.</p>
+      <p class="empty-copy">No liked videos yet.</p>
     {% endfor %}
     </div>
 
-    <h3 class="sidebar-title" style="margin-top:18px;">Notes Activity</h3>
+    <h3 class="sidebar-title sidebar-spaced-title">Notes Activity</h3>
     <p class="sidebar-subtitle">Latest notes and comments from the notes page.</p>
     <div id="notesActivityList">
     {% for note in recent_notes %}
@@ -534,10 +109,10 @@ button:hover {
         {% endif %}
       </div>
     {% empty %}
-      <p style="color:#94a3b8;">No notes yet.</p>
+      <p class="empty-copy">No notes yet.</p>
     {% endfor %}
     </div>
-    <a href="{% url 'notes' %}" style="color:#60a5fa;">Open full notes page →</a>
+    <a class="sidebar-muted-link" href="{% url 'notes' %}">Open full notes page →</a>
   </aside>
 </div>
 </div></div>
@@ -549,7 +124,9 @@ button:hover {
     <video id="sidebarModalVideo" controls playsinline></video>
   </div>
 </div>
+{% endblock %}
 
+{% block extra_scripts %}
 <script>
 let allVideoIndex = [];
 const VIDEO_PROGRESS_PREFIX = "bjj-video-progress:";
@@ -646,7 +223,7 @@ function searchVideos(query) {
   }
 
   results.innerHTML = matches.map((entry, idx) =>
-    `<div class="video-search-result" data-result-index="${idx}"><strong>${highlightMatch(entry.title, normalized)}</strong><br><small style="color:#94a3b8;">${highlightMatch(entry.category, normalized)}${entry.section ? " • " + highlightMatch(entry.section, normalized) : ""}${entry.instructor ? " • Instructor: " + highlightMatch(entry.instructor, normalized) : ""}</small></div>`
+    `<div class="video-search-result" data-result-index="${idx}"><strong>${highlightMatch(entry.title, normalized)}</strong><br><small class="search-result-meta">${highlightMatch(entry.category, normalized)}${entry.section ? " • " + highlightMatch(entry.section, normalized) : ""}${entry.instructor ? " • Instructor: " + highlightMatch(entry.instructor, normalized) : ""}</small></div>`
   ).join("");
   results.style.display = "block";
 
@@ -1103,17 +680,4 @@ function closeSidebarModal() {
   video.src = "";
 }
 </script>
-
-
-
-
-
-<nav class="mobile-tabs">
-  <a href="{% url 'home' %}" class="active">Videos</a>
-  <a href="{% url 'notes' %}">Notes</a>
-  <a href="{% url 'forum' %}">Forum</a>
-  <a href="{% url 'logout' %}">Logout</a>
-</nav>
-
-</body>
-</html>
+{% endblock %}
