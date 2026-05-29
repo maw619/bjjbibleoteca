@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BJJ Library{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="icon" href="{% static 'favicon.ico' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <div id="toast" class="toast"></div>
+
+  {% block before_nav %}{% endblock %}
+
+  {% block nav %}
+  <nav class="top-nav">
+    <a class="brand" href="{% url 'home' %}">BJJ Library</a>
+    <div class="links">
+      {% if user.is_authenticated %}<span class="welcome">{{ user.username }}</span>{% endif %}
+      <a class="{% block nav_videos_active %}{% endblock %}" href="{% url 'home' %}">Videos</a>
+      <a class="{% block nav_notes_active %}{% endblock %}" href="{% url 'notes' %}">Notes</a>
+      <a class="{% block nav_forum_active %}{% endblock %}" href="{% url 'forum' %}">Forum</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">Logout</a>
+      {% else %}
+        <a class="{% block nav_login_active %}{% endblock %}" href="{% url 'login' %}">Login</a>
+      {% endif %}
+    </div>
+  </nav>
+  {% endblock %}
+
+  {% block content %}{% endblock %}
+
+  {% block mobile_tabs %}
+  {% if user.is_authenticated %}
+  <nav class="mobile-tabs">
+    <a class="{% block mobile_videos_active %}{% endblock %}" href="{% url 'home' %}">Videos</a>
+    <a class="{% block mobile_notes_active %}{% endblock %}" href="{% url 'notes' %}">Notes</a>
+    <a class="{% block mobile_forum_active %}{% endblock %}" href="{% url 'forum' %}">Forum</a>
+    <a href="{% url 'logout' %}">Logout</a>
+  </nav>
+  {% endif %}
+  {% endblock %}
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
